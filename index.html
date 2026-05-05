@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GymGotchi V5.0 - Secure Edition</title>
+  <title>GymGotchi</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -20,50 +20,87 @@
       --silver: #cbd5e1;
       --bronze: #b45309;
       --xp-color: #3b82f6;
+      --app-filter: grayscale(0%);
+    }
+
+    body.theme-broken {
+      --bg-gradient: linear-gradient(135deg, #09090b 0%, #1c1917 100%);
+      --glass-bg: rgba(15, 15, 15, 0.85);
+      --glass-border: rgba(239, 68, 68, 0.15); 
+      --accent: #475569; 
+      --accent-glow: transparent;
+      --gold: #64748b; 
+      --xp-color: #475569;
+      --app-filter: grayscale(0.4); 
+    }
+    body.theme-broken .panel { box-shadow: 0 5px 20px rgba(239, 68, 68, 0.1); }
+
+    body.theme-epic {
+      --bg-gradient: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+      --glass-border: rgba(251, 191, 36, 0.2);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Outfit', sans-serif; background: var(--bg-gradient); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
-    header { padding: 30px 20px; text-align: center; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border); }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg-gradient); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; transition: background 0.8s ease; }
+    
+    .fx-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+    .fx-flash { animation: damageFlash 0.8s forwards ease-out; }
+    @keyframes damageFlash { 0% { background: rgba(239, 68, 68, 0.7); box-shadow: inset 0 0 100px red; } 100% { background: transparent; box-shadow: none; } }
+    
+    .shake { animation: shake-app 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+    @keyframes shake-app {
+      10%, 90% { transform: translate3d(-3px, 1px, 0); } 20%, 80% { transform: translate3d(5px, -2px, 0); }
+      30%, 50%, 70% { transform: translate3d(-10px, 3px, 0); } 40%, 60% { transform: translate3d(10px, -3px, 0); }
+    }
+
+    header { padding: 30px 20px; text-align: center; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border); transition: border-color 0.5s; }
     header h1 { font-size: 32px; font-weight: 900; letter-spacing: 2px; background: -webkit-linear-gradient(#fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .app { max-width: 1400px; margin: 30px auto; padding: 0 20px; width: 100%; }
-    .panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
-    .panel { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    
+    .app { max-width: 1400px; margin: 30px auto; padding: 0 20px; width: 100%; filter: var(--app-filter); transition: filter 0.8s ease; }
+    
+    .panels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    
+    .panel { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); transition: all 0.4s ease; }
     .panel:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); }
     .panel-full { grid-column: 1 / -1; }
-    .panel-title { font-size: 20px; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+    
+    .panel-title { font-size: 20px; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; transition: color 0.5s; }
     .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .profile-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
     .profile-controls > * { min-width: 0; }
     .muted { color: var(--muted); font-size: 14px; }
 
-    input, select { flex: 1 1 120px; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.3); color: var(--text); font-family: inherit; font-size: 15px; outline: none; transition: border-color 0.3s; text-overflow: ellipsis; }
+    input, select { flex: 1 1 120px; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.3); color: var(--text); font-family: inherit; font-size: 15px; outline: none; transition: border-color 0.3s; }
     input:focus, select:focus { border-color: var(--accent); }
     button { padding: 14px 20px; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; font-family: inherit; font-size: 15px; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
     button.btn-icon { flex: 0 0 auto; padding: 12px 16px; }
     button:disabled { cursor: not-allowed; opacity: 0.5; filter: grayscale(1); }
-    .btn-success { background: var(--accent); color: #022c22; box-shadow: 0 0 15px var(--accent-glow); }
+    .btn-success { background: var(--accent); color: #022c22; box-shadow: 0 0 15px var(--accent-glow); transition: all 0.5s; }
     .btn-success:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 0 25px var(--accent-glow); }
     .btn-danger { background: var(--danger); color: #450a0a; box-shadow: 0 0 15px var(--danger-glow); }
     .btn-danger:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 0 25px var(--danger-glow); }
     .btn-ghost { background: rgba(255, 255, 255, 0.05); color: var(--text); border: 1px solid var(--glass-border); }
     .btn-ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); }
 
-    .stats-container { background: rgba(0,0,0,0.4); padding: 16px; border-radius: 16px; border: 1px solid var(--glass-border); }
-    .level-badge { background: var(--gold); color: #000; padding: 4px 10px; border-radius: 8px; font-weight: 900; font-size: 14px; }
+    .stats-container { background: rgba(0,0,0,0.4); padding: 16px; border-radius: 16px; border: 1px solid var(--glass-border); transition: border-color 0.5s; }
+    .level-badge { background: var(--gold); color: #000; padding: 4px 10px; border-radius: 8px; font-weight: 900; font-size: 14px; transition: background 0.5s; }
     .xp-bar-bg { width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 8px; overflow: hidden; position: relative;}
-    .xp-bar-fill { height: 100%; background: var(--xp-color); width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--xp-color); }
+    .xp-bar-fill { height: 100%; background: var(--xp-color); width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s; box-shadow: 0 0 10px var(--xp-color); }
     .streak-fire { font-size: 20px; text-shadow: 0 0 10px #ff4500; animation: pulseFire 1.5s infinite alternate; }
+    body.theme-broken .streak-fire { filter: grayscale(1); animation: none; opacity: 0.2 !important; }
 
-    /* Avatar */
     .avatar-wrapper { position: relative; display: flex; justify-content: center; align-items: center; height: 180px; margin: 10px 0; }
-    .avatar-bg { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); border-radius: 50%; z-index: 0; }
+    .avatar-bg { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); border-radius: 50%; z-index: 0; transition: background 0.5s, box-shadow 0.5s; }
     .avatar-wrapper.on-fire .avatar-bg { background: radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, transparent 70%); box-shadow: 0 0 40px rgba(251, 191, 36, 0.2); }
+    body.theme-broken .avatar-bg { background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 70%); }
+    
     .avatar-core { font-size: 70px; z-index: 1; transition: transform 0.3s; position: relative; }
     .avatar-core.mood-happy { animation: float 3s ease-in-out infinite; }
-    .avatar-core.mood-angry { animation: shake 0.5s infinite; filter: grayscale(0.9) brightness(0.7); }
+    .avatar-core.mood-angry { animation: shake 0.5s infinite; filter: grayscale(0.6) brightness(0.8); }
     .mood-icon { position: absolute; top: -10px; right: -20px; font-size: 24px; opacity: 0; transition: opacity 0.3s; }
     .avatar-core.mood-angry .mood-icon { opacity: 1; }
+    .bandage-mark { position: absolute; top: 10px; left: 10px; font-size: 30px; opacity: 0; transform: rotate(-15deg); z-index: 4; transition: opacity 0.5s; }
+    body.theme-broken .bandage-mark { opacity: 1; }
 
     .accessory { position: absolute; font-size: 40px; z-index: 2; pointer-events: none; }
     .pos-cabeza { top: -30px; left: 50%; transform: translateX(-50%); z-index: 3;}
@@ -79,51 +116,52 @@
     .custom-scroll::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 10px; }
     .custom-scroll::-webkit-scrollbar-thumb:hover { background: var(--text); }
 
-    .store-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid transparent; transition: border-color 0.2s; }
+    .store-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid transparent; transition: border-color 0.2s, opacity 0.3s; }
     .store-item:hover { border-color: var(--muted); }
     .store-item .info { display: flex; align-items: center; gap: 12px; }
     .store-item .emoji-box { font-size: 28px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px; }
 
-    /* Ranking Chart */
-    .ranking-chart-wrapper { background: rgba(0,0,0,0.2); border-radius: 16px; padding: 20px 20px 40px 20px; margin-bottom: 24px; border: 1px solid var(--glass-border); }
+    .ranking-chart-wrapper { background: rgba(0,0,0,0.2); border-radius: 16px; padding: 20px 20px 40px 20px; margin-bottom: 24px; border: 1px solid var(--glass-border); transition: border-color 0.5s; }
     .ranking-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 220px; gap: 12px; border-bottom: 2px solid rgba(255,255,255,0.1); }
     .chart-column { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; flex: 1; height: 100%; position: relative; }
-    .chart-bar { width: 100%; max-width: 50px; background: linear-gradient(to top, rgba(16, 185, 129, 0.2), var(--accent)); border-radius: 8px 8px 0 0; transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--accent-glow); }
+    .chart-bar { width: 100%; max-width: 50px; background: linear-gradient(to top, rgba(16, 185, 129, 0.2), var(--accent)); border-radius: 8px 8px 0 0; transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s; box-shadow: 0 0 10px var(--accent-glow); }
     .chart-column.is-user .chart-bar { background: linear-gradient(to top, rgba(251, 191, 36, 0.2), var(--gold)); box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
     .chart-info { display: flex; flex-direction: column; align-items: center; margin-bottom: 8px; }
     .chart-emoji { font-size: 28px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
-    .chart-val { font-weight: 900; font-size: 16px; margin-top: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-    .chart-label { position: absolute; bottom: -30px; font-size: 13px; font-weight: 700; color: var(--muted); text-align: center; width: 120%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .chart-val { font-weight: 900; font-size: 16px; margin-top: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); transition: color 0.5s;}
+    .chart-label { position: absolute; bottom: -30px; font-size: 13px; font-weight: 700; color: var(--muted); text-align: center; width: 120%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.5s; }
     .chart-column.is-user .chart-label { color: var(--gold); font-weight: 900; }
 
-    /* Ranking Grid */
     .ranking-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-    .ranking-item { display: flex; align-items: center; padding: 16px; background: rgba(0,0,0,0.3); border-radius: 12px; gap: 16px; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid transparent; }
+    .ranking-item { display: flex; align-items: center; padding: 16px; background: rgba(0,0,0,0.3); border-radius: 12px; gap: 16px; transition: transform 0.2s, box-shadow 0.2s, border-color 0.5s; border: 1px solid transparent; }
     .ranking-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
     .ranking-item.is-user { background: rgba(251, 191, 36, 0.1); border-color: var(--gold); }
     .rank-pos { font-size: 24px; font-weight: 900; width: 40px; text-align: center; }
-    .rank-1 { color: var(--gold); text-shadow: 0 0 15px rgba(251, 191, 36, 0.6); font-size: 32px; }
-    .rank-2 { color: var(--silver); text-shadow: 0 0 15px rgba(203, 213, 225, 0.6); font-size: 28px; }
-    .rank-3 { color: var(--bronze); text-shadow: 0 0 15px rgba(180, 83, 9, 0.6); font-size: 28px; }
+    .rank-1 { color: var(--gold); text-shadow: 0 0 15px rgba(251, 191, 36, 0.6); font-size: 32px; transition: color 0.5s; }
+    .rank-2 { color: var(--silver); text-shadow: 0 0 15px rgba(203, 213, 225, 0.6); font-size: 28px; transition: color 0.5s; }
+    .rank-3 { color: var(--bronze); text-shadow: 0 0 15px rgba(180, 83, 9, 0.6); font-size: 28px; transition: color 0.5s; }
     .rank-info { flex: 1; display: flex; flex-direction: column; }
     .rank-name { font-weight: 700; font-size: 16px; }
     .rank-base { font-size: 20px; }
-    .rank-streak-val { font-size: 22px; font-weight: 900; color: var(--accent); display: flex; align-items: center; gap: 4px; }
+    .rank-streak-val { font-size: 22px; font-weight: 900; color: var(--accent); display: flex; align-items: center; gap: 4px; transition: color 0.5s; }
 
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
     @keyframes pulseFire { from { opacity: 0.7; transform: scale(0.9); } to { opacity: 1; transform: scale(1.1); } }
+    
     @media (max-width: 1024px) { .panels { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 768px) { .panels { grid-template-columns: 1fr; } .chart-emoji{font-size: 20px;} .chart-bar{max-width:35px;} }
   </style>
 </head>
 <body>
+  <div id="fx-overlay" class="fx-overlay"></div>
+
   <header>
     <h1>GYMGOTCHI</h1>
     <p class="muted">Forja tu disciplina, colecciona tu legado.</p>
   </header>
 
-  <main class="app">
+  <main id="app-container" class="app">
     <div class="panels">
       
       <!-- Panel 1: Estado y Avatar -->
@@ -134,6 +172,7 @@
           <select id="base-selector">
             <option value="👨">👨 Hombre</option> <option value="👩">👩 Mujer</option> <option value="🤖">🤖 Cyborg</option>
             <option value="👽">👽 Alien</option> <option value="🐱">🐱 Felino</option> <option value="🦍">🦍 Gorila</option>
+            <option value="🐺">🐺 Lobo Feroz</option> <option value="🦝">🦝 Mapache Pillín</option>
           </select>
           <button id="save-profile" class="btn-ghost btn-icon" title="Guardar cambios">💾</button>
         </div>
@@ -145,7 +184,10 @@
         <div id="avatar-wrapper" class="avatar-wrapper">
           <div class="avatar-bg"></div>
           <div id="avatar-core" class="avatar-core mood-happy">
-            <span id="base-emoji">👨</span><span class="mood-icon">💢</span><div id="avatar-accessories"></div>
+            <span id="base-emoji">👨</span>
+            <span class="mood-icon">💢</span>
+            <span class="bandage-mark">🩹</span>
+            <div id="avatar-accessories"></div>
           </div>
         </div>
       </section>
@@ -189,17 +231,20 @@
   </main>
 
   <script>
-  // VULN 1 FIX: Encapsular lógica en IIFE para evitar filtrado al objeto Window
   (() => {
-    // VULN 4 FIX: Whitelist de validación
-    const BASES_PERMITIDAS = ["👨", "👩", "🤖", "👽", "🐱", "🦍"];
+    // AÑADIDOS LOBO (🐺) Y MAPACHE (🦝) A LA LISTA BLANCA DE SEGURIDAD
+    const BASES_PERMITIDAS = ["👨", "👩", "🤖", "👽", "🐱", "🦍", "🐺", "🦝"];
     const SECRET_SALT = "GymG0tch1_S3cr3t_L0ck!";
 
     class Accesorio { constructor(id, nombre, emoji, precio, posicionCSS) { this.id=id; this.nombre=nombre; this.emoji=emoji; this.precio=precio; this.posicionCSS=posicionCSS; } }
+    
     class Avatar {
       constructor(base="👨", estadoAnimo="feliz", equipados=[]) { this.base=base; this.estadoAnimo=estadoAnimo; this.equipados=equipados; }
       actualizarEstado(cumplido) { this.estadoAnimo = cumplido ? "feliz" : "enfadado"; }
+      
       toggleAccesorio(id) {
+        if (this.estadoAnimo === "enfadado") return; 
+        
         const index = this.equipados.indexOf(id);
         if(index > -1) this.equipados.splice(index, 1);
         else {
@@ -209,7 +254,9 @@
         }
       }
     }
+    
     class Habito { constructor(registros=[]) { this.registros=registros; } }
+    
     class Usuario {
       constructor(nombre="Atleta", monedas=25, nivel=1, xp=0, racha=0, comprados=[], avatar=new Avatar(), habito=new Habito()) {
         this.nombre=nombre; this.monedas=monedas; this.nivel=nivel; this.xp=xp; this.racha=racha; this.comprados=comprados; this.avatar=avatar; this.habito=habito;
@@ -223,17 +270,23 @@
             this.xp += 15 + (this.racha*5);
             if (this.xp >= this.nivel*50) { this.xp -= this.nivel*50; this.nivel++; }
             this.avatar.actualizarEstado(true);
-        } else { this.racha=0; this.avatar.actualizarEstado(false); this.avatar.equipados=[]; }
+        } else { 
+            this.racha=0; 
+            this.avatar.actualizarEstado(false); 
+            this.avatar.equipados=[]; 
+        }
         this.habito.registros.push({fecha:hoy, cumplido});
       }
+      
       comprar(acc) {
+        if (this.avatar.estadoAnimo === "enfadado") return false; 
         if (!this.comprados.includes(acc.id) && this.monedas >= acc.precio) {
           this.monedas -= acc.precio; this.comprados.push(acc.id); this.avatar.toggleAccesorio(acc.id); return true;
         } return false;
       }
     }
 
-    const STORAGE_KEY = "gymgotchi_v5_secure";
+    const STORAGE_KEY = "gymgotchi_v6_3_furry";
     const catalogo = [
       new Accesorio(1, "Gorra Neón", "🧢", 15, "pos-cabeza"), new Accesorio(2, "Sombrero Elegante", "🎩", 25, "pos-cabeza"), new Accesorio(3, "Corona", "👑", 150, "pos-cabeza"),
       new Accesorio(4, "Ninja", "🥷", 40, "pos-cabeza"), new Accesorio(5, "Casco Astro", "🧑‍🚀", 80, "pos-cabeza"), new Accesorio(6, "Vaquero", "🤠", 30, "pos-cabeza"),
@@ -252,46 +305,33 @@
 
     let estadoApp;
 
-    // --- UTILIDADES ---
     function obtenerFechaIso() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
     function calcularAyer(f) { const d=new Date(f+"T12:00:00Z"); d.setDate(d.getDate()-1); return d.toISOString().split("T")[0]; }
     function sanitizarText(t) { return t?t.toString().replace(/<[^>]*>?/gm, '').trim().slice(0, 12):""; }
     
-    // VULN 2 FIX: Hashing Sincrono Ligero
     function generarHash(str) {
       let hash = 0; const payload = SECRET_SALT + str;
       for (let i = 0; i < payload.length; i++) {
-        hash = ((hash << 5) - hash) + payload.charCodeAt(i);
-        hash |= 0; // Convert to 32bit int
+        hash = ((hash << 5) - hash) + payload.charCodeAt(i); hash |= 0;
       }
       return hash.toString(36);
     }
 
     function crearUsuarioPorDefecto() { return new Usuario("Atleta", 25, 1, 0, 0, [], new Avatar(), new Habito()); }
 
-    // VULN 3 FIX: Deep Fallback y Recuperación Segura de Errores
     function cargarEstado() {
       try {
         const payload = JSON.parse(localStorage.getItem(STORAGE_KEY));
         if (!payload || !payload.data) return crearUsuarioPorDefecto(); 
-        
-        // Verificación de Integridad
-        const hashCalculado = generarHash(payload.data);
-        if (hashCalculado !== payload.hash) {
-            console.warn("Fallo de integridad de datos detectado. Cargando valores por defecto.");
-            return crearUsuarioPorDefecto();
-        }
+        if (generarHash(payload.data) !== payload.hash) return crearUsuarioPorDefecto();
 
         const raw = JSON.parse(payload.data);
-        
-        // Reconstrucción validando tipos y usando fallback
         const baseSegura = BASES_PERMITIDAS.includes(raw.avatar?.base) ? raw.avatar.base : "👨";
         const animoSeguro = typeof raw.avatar?.estadoAnimo === 'string' ? raw.avatar.estadoAnimo : "feliz";
         const equipSeguros = Array.isArray(raw.avatar?.equipados) ? raw.avatar.equipados.filter(Number.isInteger) : [];
         const av = new Avatar(baseSegura, animoSeguro, equipSeguros);
         
-        const regSeguros = Array.isArray(raw.habito?.registros) 
-            ? raw.habito.registros.filter(r => r && typeof r.fecha === 'string' && typeof r.cumplido === 'boolean') : [];
+        const regSeguros = Array.isArray(raw.habito?.registros) ? raw.habito.registros.filter(r => r && typeof r.fecha === 'string' && typeof r.cumplido === 'boolean') : [];
         const hb = new Habito(regSeguros);
         
         const nombreSeguro = sanitizarText(raw.nombre) || "Atleta";
@@ -302,21 +342,18 @@
         const compradosSeguros = Array.isArray(raw.comprados) ? raw.comprados.filter(Number.isInteger) : [];
 
         return new Usuario(nombreSeguro, monedasSeguras, nivelSeguro, xpSegura, rachaSegura, compradosSeguros, av, hb);
-      } catch(e) { 
-        console.error("Estructura JSON crítica dañada:", e);
-        return crearUsuarioPorDefecto(); 
-      } 
+      } catch(e) { return crearUsuarioPorDefecto(); } 
     }
 
     function guardarEstado() { 
       const dataStr = JSON.stringify(estadoApp);
-      const payload = { data: dataStr, hash: generarHash(dataStr) };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); 
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: dataStr, hash: generarHash(dataStr) })); 
     }
 
     function yaRegistroHoy() { return estadoApp.habito.registros.some(r=>r.fecha===obtenerFechaIso()); }
 
     const UI = {
+      appContainer: document.getElementById('app-container'), fxOverlay: document.getElementById('fx-overlay'),
       nameInput: document.getElementById('name-input'), baseSelector: document.getElementById('base-selector'), saveProfileBtn: document.getElementById('save-profile'),
       userName: document.getElementById('user-name'), levelDisplay: document.getElementById('level-display'), xpText: document.getElementById('xp-text'), xpBar: document.getElementById('xp-bar'),
       coinCount: document.getElementById('coin-count'), streakCount: document.getElementById('streak-count'), streakIcon: document.getElementById('streak-icon'),
@@ -326,20 +363,17 @@
       rankingList: document.getElementById('ranking-list'), rankingChart: document.getElementById('ranking-chart')
     };
 
-    // VULN 5 FIX: Eliminados los .innerHTML, se usa document.createElement
     function renderizarRanking() {
       const competidores = [...rivalesVirtuales, { nombre: estadoApp.nombre||"Tú", racha: estadoApp.racha, base: estadoApp.avatar.base, isUser: true }];
       competidores.sort((a, b) => b.racha - a.racha);
 
-      // Render Gráfica
       UI.rankingChart.innerHTML = '';
       const top7 = competidores.slice(0, 7);
       const maxStreak = Math.max(...top7.map(c => c.racha), 1);
 
       top7.forEach(comp => {
         const heightPct = Math.max((comp.racha / maxStreak) * 100, 5); 
-        const col = document.createElement('div');
-        col.className = `chart-column ${comp.isUser ? 'is-user' : ''}`;
+        const col = document.createElement('div'); col.className = `chart-column ${comp.isUser ? 'is-user' : ''}`;
         
         const cInfo = document.createElement('div'); cInfo.className = 'chart-info';
         const cEmoji = document.createElement('div'); cEmoji.className = 'chart-emoji'; cEmoji.textContent = comp.base;
@@ -349,17 +383,13 @@
         const cBar = document.createElement('div'); cBar.className = 'chart-bar'; cBar.style.height = `${heightPct}%`;
         const cLabel = document.createElement('div'); cLabel.className = 'chart-label'; cLabel.textContent = comp.nombre;
 
-        col.append(cInfo, cBar, cLabel);
-        UI.rankingChart.appendChild(col);
+        col.append(cInfo, cBar, cLabel); UI.rankingChart.appendChild(col);
       });
 
-      // Render Cuadrícula
       UI.rankingList.innerHTML = '';
       competidores.forEach((comp, index) => {
-        const div = document.createElement('div');
-        div.className = `ranking-item ${comp.isUser ? 'is-user' : ''}`;
-        const pos = index + 1;
-        let medalla = `${pos}º`;
+        const div = document.createElement('div'); div.className = `ranking-item ${comp.isUser ? 'is-user' : ''}`;
+        const pos = index + 1; let medalla = `${pos}º`;
         if(pos===1) medalla='🥇'; if(pos===2) medalla='🥈'; if(pos===3) medalla='🥉';
 
         const dPos = document.createElement('div'); dPos.className = `rank-pos ${pos<=3?'rank-'+pos:''}`; dPos.textContent = medalla;
@@ -372,40 +402,62 @@
         const dStreakVal = document.createElement('div'); dStreakVal.className = 'rank-streak-val'; dStreakVal.textContent = `${comp.racha} 🔥`;
         dStreakBox.appendChild(dStreakVal);
 
-        div.append(dPos, dInfo, dStreakBox);
-        UI.rankingList.appendChild(div);
+        div.append(dPos, dInfo, dStreakBox); UI.rankingList.appendChild(div);
       });
     }
 
     function renderizarTienda() {
-      UI.storeList.innerHTML = ''; const filtro = UI.storeFilter.value;
-      const catFilt = filtro==='all'?catalogo:catalogo.filter(i=>i.posicionCSS===filtro);
+      UI.storeList.innerHTML = ''; 
+      const filtro = UI.storeFilter.value;
+      const catFilt = filtro === 'all' ? catalogo : catalogo.filter(i => i.posicionCSS === filtro);
+      
+      const estaCastigado = estadoApp.avatar.estadoAnimo === "enfadado";
+      
+      if (estaCastigado) {
+          const aviso = document.createElement('div');
+          aviso.style.color = 'var(--danger)';
+          aviso.style.textAlign = 'center';
+          aviso.style.padding = '10px';
+          aviso.style.marginBottom = '10px';
+          aviso.style.fontWeight = 'bold';
+          aviso.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+          aviso.style.borderRadius = '10px';
+          aviso.style.background = 'rgba(239, 68, 68, 0.1)';
+          aviso.textContent = "🔒 Armería Bloqueada. ¡Entrena para recuperar el acceso!";
+          UI.storeList.appendChild(aviso);
+      }
       
       catFilt.forEach(item => {
         const div = document.createElement('div'); div.className = 'store-item';
+        if (estaCastigado) div.style.opacity = '0.5'; 
         
         const info = document.createElement('div'); info.className = 'info';
         const emojiBox = document.createElement('div'); emojiBox.className = 'emoji-box'; emojiBox.textContent = item.emoji;
         const textWrapper = document.createElement('div');
         const iName = document.createElement('div'); iName.style.fontWeight = '600'; iName.textContent = item.nombre;
         const iPrice = document.createElement('div'); iPrice.className = 'muted'; iPrice.textContent = `${item.precio} 🪙`;
-        textWrapper.append(iName, iPrice);
-        info.append(emojiBox, textWrapper);
+        textWrapper.append(iName, iPrice); info.append(emojiBox, textWrapper);
 
         const btn = document.createElement('button'); 
         const comprado = estadoApp.comprados.includes(item.id); 
         const equipado = estadoApp.avatar.equipados.includes(item.id);
         
-        if(comprado){ 
-            btn.className=equipado?'btn-danger':'btn-ghost'; btn.textContent=equipado?'Quitar':'Equipar'; 
-            btn.onclick=()=>{estadoApp.avatar.toggleAccesorio(item.id);guardarEstado();renderizarAvatar();renderizarTienda();}; 
+        if (comprado) { 
+            btn.className = equipado ? 'btn-danger' : 'btn-ghost'; 
+            btn.textContent = equipado ? 'Quitar' : 'Equipar'; 
+            btn.disabled = estaCastigado; 
+            if (!estaCastigado) {
+                btn.onclick = () => { estadoApp.avatar.toggleAccesorio(item.id); guardarEstado(); renderizarAvatar(); renderizarTienda(); }; 
+            }
         } else { 
-            btn.className='btn-ghost'; btn.textContent='Comprar'; btn.disabled=estadoApp.monedas<item.precio; 
-            btn.onclick=()=>{if(estadoApp.comprar(item)){guardarEstado();renderizarBase();renderizarAvatar();renderizarTienda();}}; 
+            btn.className = 'btn-ghost'; 
+            btn.textContent = 'Comprar'; 
+            btn.disabled = estadoApp.monedas < item.precio || estaCastigado; 
+            if (!estaCastigado) {
+                btn.onclick = () => { if(estadoApp.comprar(item)) { guardarEstado(); renderizarBase(); renderizarAvatar(); renderizarTienda(); } }; 
+            }
         }
-        
-        div.append(info, btn); 
-        UI.storeList.appendChild(div);
+        div.append(info, btn); UI.storeList.appendChild(div);
       });
     }
 
@@ -419,11 +471,24 @@
       });
     }
 
+    function evaluarClima() {
+        document.body.classList.remove('theme-broken', 'theme-epic');
+        if (estadoApp.habito.registros.length > 0) {
+            const ultimoReg = estadoApp.habito.registros[estadoApp.habito.registros.length - 1];
+            if (estadoApp.racha === 0 && !ultimoReg.cumplido) {
+                document.body.classList.add('theme-broken');
+            } else if (estadoApp.racha >= 3) {
+                document.body.classList.add('theme-epic');
+            }
+        }
+    }
+
     function renderizarBase() {
       UI.nameInput.value=estadoApp.nombre; UI.baseSelector.value=estadoApp.avatar.base; UI.userName.textContent=estadoApp.nombre||"Atleta";
       UI.coinCount.textContent=`${estadoApp.monedas} 🪙`; UI.levelDisplay.textContent=`Nvl. ${estadoApp.nivel}`;
       UI.xpText.textContent=`${estadoApp.xp}/${estadoApp.nivel*50}`; UI.xpBar.style.width=`${(estadoApp.xp/(estadoApp.nivel*50))*100}%`;
       UI.streakCount.textContent=estadoApp.racha; UI.streakIcon.style.opacity=estadoApp.racha>0?"1":"0.3";
+      
       if(estadoApp.racha>=3) UI.avatarWrapper.classList.add('on-fire'); else UI.avatarWrapper.classList.remove('on-fire');
 
       const bl=yaRegistroHoy(); UI.btnGym.disabled=bl; UI.btnFail.disabled=bl;
@@ -434,20 +499,18 @@
       } else { 
           UI.actionMessage.textContent="Haz tu registro de hoy."; UI.actionMessage.style.color="var(--text)"; 
       }
+      
+      evaluarClima();
     }
 
     function renderizar() { renderizarBase(); renderizarAvatar(); renderizarTienda(); renderizarRanking(); }
 
     UI.storeFilter.addEventListener('change', renderizarTienda);
-    
-    // Whitelist Validation aplicado en el evento Change
     UI.baseSelector.addEventListener('change', ()=>{
         const selected = UI.baseSelector.value;
         estadoApp.avatar.base = BASES_PERMITIDAS.includes(selected) ? selected : "👨"; 
         guardarEstado(); renderizarAvatar(); renderizarRanking();
     });
-    
-    // Whitelist Validation aplicado en el evento Clic (Botón Guardar)
     UI.saveProfileBtn.addEventListener('click', ()=>{
         estadoApp.nombre=sanitizarText(UI.nameInput.value)||"Atleta"; 
         const selected = UI.baseSelector.value;
@@ -456,9 +519,21 @@
     });
     
     UI.btnGym.addEventListener('click', ()=>{estadoApp.registrarDia(true); guardarEstado(); renderizar();});
-    UI.btnFail.addEventListener('click', ()=>{estadoApp.registrarDia(false); guardarEstado(); renderizar();});
+    
+    UI.btnFail.addEventListener('click', ()=>{
+        UI.appContainer.classList.add('shake');
+        UI.fxOverlay.classList.add('fx-flash');
+        
+        setTimeout(() => {
+            UI.appContainer.classList.remove('shake');
+            UI.fxOverlay.classList.remove('fx-flash');
+        }, 800);
 
-    // Boot
+        estadoApp.registrarDia(false); 
+        guardarEstado(); 
+        renderizar();
+    });
+
     estadoApp = cargarEstado();
     if(estadoApp.habito.registros.length>0){
         const hoy=obtenerFechaIso(); const ayer=calcularAyer(hoy); const ul=estadoApp.habito.registros[estadoApp.habito.registros.length-1];
