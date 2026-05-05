@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GymGotchi - Forja tu avatar</title>
+  <style>
+    :root {
+      --bg: #121417;
+      --panel: #1b1f25;
+      --text: #e6e6e6;
+      --muted: #9aa4b2;
+      --accent: #22ff88;
+      --danger: #ff6b6b;
+      --gold: #f7c948;
+      --border: #2a313a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      padding: 24px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .app {
+      max-width: 1100px;
+      margin: 0 auto 40px;
+      padding: 0 16px;
+    }
+
+    .panels {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      flex: 1 1 280px;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .panel:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .user-input {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0e1116;
+      color: var(--text);
+    }
+
+    button {
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .btn-success {
+      background: var(--accent);
+      color: #0a0f0d;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #1b0d0d;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .coins {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .avatar {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+
+    .avatar-emoji {
+      transition: transform 0.3s ease;
+    }
+
+    .avatar.mood-happy .avatar-emoji {
+      animation: bounce 1.2s infinite;
+    }
+
+    .avatar.mood-angry .avatar-emoji {
+      animation: shake 0.8s infinite;
+    }
+
+    .accessories {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .accessory {
+      position: absolute;
+      font-size: 28px;
+    }
+
+    .accessory-0 { top: 8px; left: 60px; }
+    .accessory-1 { bottom: 12px; right: 18px; }
+    .accessory-2 { top: 40px; right: 18px; }
+
+    .store-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #161a20;
+    }
+
+    .store-item .info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .store-item .emoji {
+      font-size: 24px;
+    }
+
+    .status-pill {
+      background: #0e1116;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+
+    @media (max-width: 900px) {
+      .panels {
+        flex-direction: column;
+      }
+
+      .avatar {
+        width: 140px;
+        height: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>GymGotchi - Forja tu avatar</header>
+  <div class="app">
+    <div class="panels">
+      <section class="panel" aria-label="Panel de estado">
+        <h2>Estado</h2>
+        <div class="user-input">
+          <input id="name-input" type="text" maxlength="15" placeholder="Tu nombre" />
+          <button id="save-name" class="btn-ghost">Guardar</button>
+        </div>
+        <div class="row">
+          <span class="muted">Usuario:</span>
+          <strong id="user-name"></strong>
+        </div>
+        <div class="row">
+          <span class="muted">Monedas:</span>
+          <span id="coin-count" class="coins">0 🪙</span>
+        </div>
+        <div id="avatar" class="avatar">
+          <div id="avatar-emoji" class="avatar-emoji">💪😎</div>
+          <div id="avatar-accessories" class="accessories"></div>
+        </div>
+        <div class="row">
+          <span id="today-status" class="status-pill">Sin registro hoy</span>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Panel de acciones">
+        <h2>Acciones</h2>
+        <p class="muted">Registra tu asistencia diaria y cuida el humor de tu GymGotchi.</p>
+        <button id="btn-gym" class="btn-success">¡Fui al Gimnasio! 💪</button>
+        <button id="btn-fail" class="btn-danger">He fallado hoy 🛋️</button>
+        <div class="status-pill" id="action-message">Haz tu registro de hoy.</div>
+      </section>
+
+      <section class="panel" aria-label="Panel de tienda">
+        <h2>Tienda</h2>
+        <p class="muted">Compra accesorios con tus monedas y equipa a tu avatar.</p>
+        <div id="store-list"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    class Accesorio {
+      constructor(id, nombre, emoji, precio) {
+        this.id = id;
+        this.nombre = nombre;
+        this.emoji = emoji;
+        this.precio = precio;
+      }
+    }
+
+    class Avatar {
+      constructor(estadoAnimo = "feliz", accesoriosEquipados = []) {
+        this.estadoAnimo = estadoAnimo;
+        this.accesoriosEquipados = accesoriosEquipados;
+      }
+
+      actualizarEstado(cumplido) {
+        this.estadoAnimo = cumplido ? "feliz" : "enfadado";
+      }
+
+      equiparAccesorio(accesorio) {
+        if (!this.accesoriosEquipados.includes(accesorio.id)) {
+          this.accesoriosEquipados.push(accesorio.id);
+        }
+      }
+    }
+
+    class RegistroDia {
+      constructor(fecha, cumplido) {
+        this.fecha = fecha;
+        this.cumplido = cumplido;
+      }
+    }
+
+    class Habito {
+      constructor(id, nombre, recompensaMonedas, registros = []) {
+        this.id = id;
+        this.nombre = nombre;
+        this.recompensaMonedas = recompensaMonedas;
+        this.registros = registros;
+      }
+    }
+
+    class Usuario {
+      constructor(id, nombre, monedas, accesoriosComprados, avatar, habito) {
+        this.id = id;
+        this.nombre = nombre;
+        this.monedas = monedas;
+        this.accesoriosComprados = accesoriosComprados;
+        this.avatar = avatar;
+        this.habito = habito;
+      }
+
+      registrarDia(cumplido) {
+        const registro = new RegistroDia(obtenerFechaHoy(), cumplido);
+        if (cumplido) {
+          this.monedas += this.habito.recompensaMonedas;
+          this.avatar.actualizarEstado(true);
+          this.avatar.accesoriosEquipados = [...this.accesoriosComprados];
+        } else {
+          this.avatar.actualizarEstado(false);
+          this.avatar.accesoriosEquipados = [];
+        }
+        return registro;
+      }
+
+      comprarAccesorio(accesorio) {
+        if (this.accesoriosComprados.includes(accesorio.id)) {
+          return false;
+        }
+        if (this.monedas < accesorio.precio) {
+          return false;
+        }
+        this.monedas -= accesorio.precio;
+        this.accesoriosComprados.push(accesorio.id);
+        this.avatar.equiparAccesorio(accesorio);
+        return true;
+      }
+
+      hidratarDesdeJSON(data) {
+        this.id = data.id;
+        this.nombre = data.nombre;
+        this.monedas = data.monedas;
+        this.accesoriosComprados = data.accesoriosComprados;
+        this.avatar = new Avatar(data.avatar.estadoAnimo, data.avatar.accesoriosEquipados);
+        return this;
+      }
+    }
+
+    const STORAGE_KEY = "gymgotchi_state_v1";
+
+    const catalogoAccesorios = [
+      new Accesorio(1, "Gorra Neon", "🧢", 4),
+      new Accesorio(2, "Lentes Pro", "🕶️", 6),
+      new Accesorio(3, "Medalla Oro", "🥇", 8)
+    ];
+
+    const elementos = {
+      nameInput: document.getElementById("name-input"),
+      saveName: document.getElementById("save-name"),
+      userName: document.getElementById("user-name"),
+      coinCount: document.getElementById("coin-count"),
+      avatar: document.getElementById("avatar"),
+      avatarEmoji: document.getElementById("avatar-emoji"),
+      avatarAccessories: document.getElementById("avatar-accessories"),
+      todayStatus: document.getElementById("today-status"),
+      actionMessage: document.getElementById("action-message"),
+      btnGym: document.getElementById("btn-gym"),
+      btnFail: document.getElementById("btn-fail"),
+      storeList: document.getElementById("store-list")
+    };
+
+    const estadoApp = cargarEstadoSeguro();
+
+    function obtenerFechaHoy() {
+      const ahora = new Date();
+      const yyyy = ahora.getFullYear();
+      const mm = String(ahora.getMonth() + 1).padStart(2, "0");
+      const dd = String(ahora.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function sanitizarNombre(nombre) {
+      if (typeof nombre !== "string") {
+        return "Atleta";
+      }
+      const limpio = nombre.trim().slice(0, 15);
+      return limpio.length ? limpio : "Atleta";
+    }
+
+    function esEnteroSeguro(valor) {
+      return Number.isInteger(valor) && valor >= 0;
+    }
+
+    function validarRegistro(registro) {
+      return (
+        registro &&
+        typeof registro.fecha === "string" &&
+        typeof registro.cumplido === "boolean"
+      );
+    }
+
+    function validarEstado(raw) {
+      if (!raw || typeof raw !== "object") {
+        return null;
+      }
+      const usuario = raw.usuario;
+      const habito = raw.habito;
+      if (!usuario || !habito) {
+        return null;
+      }
+      if (!esEnteroSeguro(usuario.id)) {
+        return null;
+      }
+      if (!esEnteroSeguro(usuario.monedas)) {
+        return null;
+      }
+      if (!Array.isArray(usuario.accesoriosComprados)) {
+        return null;
+      }
+      if (!usuario.avatar || typeof usuario.avatar !== "object") {
+        return null;
+      }
+      if (!Array.isArray(usuario.avatar.accesoriosEquipados)) {
+        return null;
+      }
+      if (typeof usuario.avatar.estadoAnimo !== "string") {
+        return null;
+      }
+      if (!esEnteroSeguro(habito.id) || typeof habito.nombre !== "string") {
+        return null;
+      }
+      if (!esEnteroSeguro(habito.recompensaMonedas)) {
+        return null;
+      }
+      if (!Array.isArray(habito.registros)) {
+        return null;
+      }
+      if (!habito.registros.every(validarRegistro)) {
+        return null;
+      }
+      return raw;
+    }
+
+    function crearEstadoInicial() {
+      const habito = new Habito(1, "Gimnasio", 3, []);
+      const avatar = new Avatar("feliz", []);
+      const usuario = new Usuario(1, "Atleta", 0, [], avatar, habito);
+      return { usuario, habito };
+    }
+
+    function cargarEstadoSeguro() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        const validado = validarEstado(raw);
+        if (!validado) {
+          return crearEstadoInicial();
+        }
+        const habito = new Habito(
+          validado.habito.id,
+          validado.habito.nombre,
+          validado.habito.recompensaMonedas,
+          validado.habito.registros.map(
+            (r) => new RegistroDia(r.fecha, r.cumplido)
+          )
+        );
+        const usuario = new Usuario(1, sanitizarNombre(validado.usuario.nombre), validado.usuario.monedas, [], new Avatar(), habito);
+        usuario.accesoriosComprados = validado.usuario.accesoriosComprados.filter((id) => Number.isInteger(id));
+        usuario.avatar = new Avatar(
+          validado.usuario.avatar.estadoAnimo === "feliz" ? "feliz" : "enfadado",
+          validado.usuario.avatar.accesoriosEquipados.filter((id) => Number.isInteger(id))
+        );
+        usuario.habito = habito;
+        return { usuario, habito };
+      } catch (error) {
+        return crearEstadoInicial();
+      }
+    }
+
+    function guardarEstado() {
+      const data = {
+        usuario: {
+          id: estadoApp.usuario.id,
+          nombre: estadoApp.usuario.nombre,
+          monedas: estadoApp.usuario.monedas,
+          accesoriosComprados: [...estadoApp.usuario.accesoriosComprados],
+          avatar: {
+            estadoAnimo: estadoApp.usuario.avatar.estadoAnimo,
+            accesoriosEquipados: [...estadoApp.usuario.avatar.accesoriosEquipados]
+          }
+        },
+        habito: {
+          id: estadoApp.habito.id,
+          nombre: estadoApp.habito.nombre,
+          recompensaMonedas: estadoApp.habito.recompensaMonedas,
+          registros: estadoApp.habito.registros.map((r) => ({
+            fecha: r.fecha,
+            cumplido: r.cumplido
+          }))
+        }
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function yaRegistroHoy() {
+      const hoy = obtenerFechaHoy();
+      return estadoApp.habito.registros.some((r) => r.fecha === hoy);
+    }
+
+    function renderizarAvatar() {
+      elementos.avatar.classList.toggle("mood-happy", estadoApp.usuario.avatar.estadoAnimo === "feliz");
+      elementos.avatar.classList.toggle("mood-angry", estadoApp.usuario.avatar.estadoAnimo !== "feliz");
+      elementos.avatarEmoji.textContent = estadoApp.usuario.avatar.estadoAnimo === "feliz" ? "💪😎" : "😠👎";
+
+      elementos.avatarAccessories.replaceChildren();
+      estadoApp.usuario.avatar.accesoriosEquipados.forEach((id, index) => {
+        const accesorio = catalogoAccesorios.find((item) => item.id === id);
+        if (!accesorio) {
+          return;
+        }
+        const span = document.createElement("span");
+        span.className = `accessory accessory-${index % 3}`;
+        span.textContent = accesorio.emoji;
+        elementos.avatarAccessories.appendChild(span);
+      });
+    }
+
+    function renderizarTienda() {
+      elementos.storeList.replaceChildren();
+      catalogoAccesorios.forEach((accesorio) => {
+        const item = document.createElement("div");
+        item.className = "store-item";
+
+        const info = document.createElement("div");
+        info.className = "info";
+
+        const emoji = document.createElement("span");
+        emoji.className = "emoji";
+        emoji.textContent = accesorio.emoji;
+
+        const texto = document.createElement("div");
+        const nombre = document.createElement("div");
+        nombre.textContent = accesorio.nombre;
+        const precio = document.createElement("div");
+        precio.className = "muted";
+        precio.textContent = `${accesorio.precio} 🪙`;
+
+        texto.appendChild(nombre);
+        texto.appendChild(precio);
+        info.appendChild(emoji);
+        info.appendChild(texto);
+
+        const boton = document.createElement("button");
+        boton.className = "btn-ghost";
+
+        const comprado = estadoApp.usuario.accesoriosComprados.includes(accesorio.id);
+        const puedePagar = estadoApp.usuario.monedas >= accesorio.precio;
+        boton.disabled = comprado || !puedePagar;
+        boton.textContent = comprado ? "Comprado" : "Comprar";
+
+        boton.addEventListener("click", () => {
+          if (estadoApp.usuario.comprarAccesorio(accesorio)) {
+            guardarEstado();
+            renderizar();
+          }
+        });
+
+        item.appendChild(info);
+        item.appendChild(boton);
+        elementos.storeList.appendChild(item);
+      });
+    }
+
+    function renderizar() {
+      elementos.userName.textContent = estadoApp.usuario.nombre;
+      elementos.nameInput.value = estadoApp.usuario.nombre;
+      elementos.coinCount.textContent = `${estadoApp.usuario.monedas} 🪙`;
+      renderizarAvatar();
+      renderizarTienda();
+
+      const bloqueo = yaRegistroHoy();
+      elementos.btnGym.disabled = bloqueo;
+      elementos.btnFail.disabled = bloqueo;
+      elementos.todayStatus.textContent = bloqueo ? "Registro hecho hoy" : "Sin registro hoy";
+      elementos.actionMessage.textContent = bloqueo ? "Vuelve mañana para registrar." : "Haz tu registro de hoy.";
+    }
+
+    function registrarAccion(cumplido) {
+      if (yaRegistroHoy()) {
+        return;
+      }
+      const registro = estadoApp.usuario.registrarDia(cumplido);
+      estadoApp.habito.registros.push(registro);
+      guardarEstado();
+      renderizar();
+    }
+
+    elementos.saveName.addEventListener("click", () => {
+      const nuevoNombre = sanitizarNombre(elementos.nameInput.value);
+      estadoApp.usuario.nombre = nuevoNombre;
+      guardarEstado();
+      renderizar();
+    });
+
+    elementos.btnGym.addEventListener("click", () => registrarAccion(true));
+    elementos.btnFail.addEventListener("click", () => registrarAccion(false));
+
+    renderizar();
+  </script>
+</body>
+</html>
+
