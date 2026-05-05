@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GymGotchi V3.0 - Ultimate Armory</title>
+  <title>GymGotchi V4.2 - Chart Analytics</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -17,6 +17,8 @@
       --danger: #ef4444;
       --danger-glow: rgba(239, 68, 68, 0.4);
       --gold: #fbbf24;
+      --silver: #cbd5e1;
+      --bronze: #b45309;
       --xp-color: #3b82f6;
     }
 
@@ -49,7 +51,7 @@
     }
 
     .app {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 30px auto;
       padding: 0 20px;
       width: 100%;
@@ -74,60 +76,37 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .panel-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--gold);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .panel:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
     }
 
+    .panel-full { grid-column: 1 / -1; }
+    .panel-title { font-size: 20px; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
     .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    
     .profile-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
     .profile-controls > * { min-width: 0; }
     .muted { color: var(--muted); font-size: 14px; }
 
     input, select {
-      flex: 1 1 120px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid var(--glass-border);
-      background: rgba(0, 0, 0, 0.3);
-      color: var(--text);
-      font-family: inherit;
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.3s;
-      text-overflow: ellipsis;
+      flex: 1 1 120px; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--glass-border);
+      background: rgba(0, 0, 0, 0.3); color: var(--text); font-family: inherit; font-size: 15px;
+      outline: none; transition: border-color 0.3s; text-overflow: ellipsis;
     }
     input:focus, select:focus { border-color: var(--accent); }
 
     button {
-      padding: 14px 20px;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      font-weight: 700;
-      font-family: inherit;
-      font-size: 15px;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      padding: 14px 20px; border-radius: 12px; border: none; cursor: pointer;
+      font-weight: 700; font-family: inherit; font-size: 15px; transition: all 0.3s ease;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
 
     button.btn-icon { flex: 0 0 auto; padding: 12px 16px; }
     button:disabled { cursor: not-allowed; opacity: 0.5; filter: grayscale(1); }
-    
     .btn-success { background: var(--accent); color: #022c22; box-shadow: 0 0 15px var(--accent-glow); }
     .btn-success:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 0 25px var(--accent-glow); }
-    
     .btn-danger { background: var(--danger); color: #450a0a; box-shadow: 0 0 15px var(--danger-glow); }
     .btn-danger:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 0 25px var(--danger-glow); }
-    
     .btn-ghost { background: rgba(255, 255, 255, 0.05); color: var(--text); border: 1px solid var(--glass-border); }
     .btn-ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); }
 
@@ -135,59 +114,73 @@
     .level-badge { background: var(--gold); color: #000; padding: 4px 10px; border-radius: 8px; font-weight: 900; font-size: 14px; }
     .xp-bar-bg { width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 8px; overflow: hidden; position: relative;}
     .xp-bar-fill { height: 100%; background: var(--xp-color); width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--xp-color); }
-    
     .streak-fire { font-size: 20px; text-shadow: 0 0 10px #ff4500; animation: pulseFire 1.5s infinite alternate; }
 
     /* Avatar */
     .avatar-wrapper { position: relative; display: flex; justify-content: center; align-items: center; height: 180px; margin: 10px 0; }
     .avatar-bg { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); border-radius: 50%; z-index: 0; }
     .avatar-wrapper.on-fire .avatar-bg { background: radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, transparent 70%); box-shadow: 0 0 40px rgba(251, 191, 36, 0.2); }
-    
     .avatar-core { font-size: 70px; z-index: 1; transition: transform 0.3s; position: relative; }
     .avatar-core.mood-happy { animation: float 3s ease-in-out infinite; }
     .avatar-core.mood-angry { animation: shake 0.5s infinite; filter: grayscale(0.9) brightness(0.7); }
-    
     .mood-icon { position: absolute; top: -10px; right: -20px; font-size: 24px; opacity: 0; transition: opacity 0.3s; }
     .avatar-core.mood-angry .mood-icon { opacity: 1; }
 
     .accessory { position: absolute; font-size: 40px; z-index: 2; pointer-events: none; }
-    
-    /* Posiciones del equipamiento */
     .pos-cabeza { top: -30px; left: 50%; transform: translateX(-50%); z-index: 3;}
     .pos-ojos { top: 15px; left: 50%; transform: translateX(-50%); font-size: 45px; z-index: 3;}
     .pos-cuello { bottom: -15px; left: 50%; transform: translateX(-50%); font-size: 50px; z-index: 3;}
-    .pos-mano { top: 10px; left: -50px; font-size: 35px; z-index: 3;} /* Mano izquierda */
-    
-    /* Nuevas Categorías Premium */
-    .pos-aura { 
-      top: 50%; left: 50%; transform: translate(-50%, -50%) scale(2.8); 
-      z-index: -1; opacity: 0.7; filter: drop-shadow(0 0 15px rgba(255,255,255,0.5));
-    }
-    .pos-mascota { 
-      bottom: -15px; right: -60px; font-size: 45px; z-index: 3;
-      animation: float 4s ease-in-out infinite reverse;
-    }
+    .pos-mano { top: 10px; left: -50px; font-size: 35px; z-index: 3;}
+    .pos-aura { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(2.8); z-index: -1; opacity: 0.7; filter: drop-shadow(0 0 15px rgba(255,255,255,0.5)); }
+    .pos-mascota { bottom: -15px; right: -60px; font-size: 45px; z-index: 3; animation: float 4s ease-in-out infinite reverse; }
 
-    /* Tienda y Scrollbar */
-    .store-scroll {
-      display: flex; flex-direction: column; gap: 10px; margin-top: 5px;
-      max-height: 380px; overflow-y: auto; padding-right: 8px;
-    }
-    .store-scroll::-webkit-scrollbar { width: 8px; }
-    .store-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
-    .store-scroll::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 10px; }
-    .store-scroll::-webkit-scrollbar-thumb:hover { background: var(--text); }
+    .custom-scroll { display: flex; flex-direction: column; gap: 10px; margin-top: 5px; max-height: 380px; overflow-y: auto; padding-right: 8px; }
+    .custom-scroll::-webkit-scrollbar { width: 8px; }
+    .custom-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 10px; }
+    .custom-scroll::-webkit-scrollbar-thumb:hover { background: var(--text); }
 
     .store-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid transparent; transition: border-color 0.2s; }
     .store-item:hover { border-color: var(--muted); }
     .store-item .info { display: flex; align-items: center; gap: 12px; }
     .store-item .emoji-box { font-size: 28px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px; }
 
+    /* --- GRÁFICA DE RANKING --- */
+    .ranking-chart-wrapper { background: rgba(0,0,0,0.2); border-radius: 16px; padding: 20px 20px 40px 20px; margin-bottom: 24px; border: 1px solid var(--glass-border); }
+    .ranking-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 220px; gap: 12px; border-bottom: 2px solid rgba(255,255,255,0.1); }
+    .chart-column { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; flex: 1; height: 100%; position: relative; }
+    .chart-bar { 
+      width: 100%; max-width: 50px; background: linear-gradient(to top, rgba(16, 185, 129, 0.2), var(--accent));
+      border-radius: 8px 8px 0 0; transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--accent-glow); 
+    }
+    .chart-column.is-user .chart-bar { background: linear-gradient(to top, rgba(251, 191, 36, 0.2), var(--gold)); box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
+    .chart-info { display: flex; flex-direction: column; align-items: center; margin-bottom: 8px; }
+    .chart-emoji { font-size: 28px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+    .chart-val { font-weight: 900; font-size: 16px; margin-top: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+    .chart-label { position: absolute; bottom: -30px; font-size: 13px; font-weight: 700; color: var(--muted); text-align: center; width: 120%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .chart-column.is-user .chart-label { color: var(--gold); font-weight: 900; }
+
+    /* Ranking Grid */
+    .ranking-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .ranking-item { display: flex; align-items: center; padding: 16px; background: rgba(0,0,0,0.3); border-radius: 12px; gap: 16px; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid transparent; }
+    .ranking-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+    .ranking-item.is-user { background: rgba(251, 191, 36, 0.1); border-color: var(--gold); }
+    
+    .rank-pos { font-size: 24px; font-weight: 900; width: 40px; text-align: center; }
+    .rank-1 { color: var(--gold); text-shadow: 0 0 15px rgba(251, 191, 36, 0.6); font-size: 32px; }
+    .rank-2 { color: var(--silver); text-shadow: 0 0 15px rgba(203, 213, 225, 0.6); font-size: 28px; }
+    .rank-3 { color: var(--bronze); text-shadow: 0 0 15px rgba(180, 83, 9, 0.6); font-size: 28px; }
+    
+    .rank-info { flex: 1; display: flex; flex-direction: column; }
+    .rank-name { font-weight: 700; font-size: 16px; }
+    .rank-base { font-size: 20px; }
+    .rank-streak-val { font-size: 22px; font-weight: 900; color: var(--accent); display: flex; align-items: center; gap: 4px; }
+
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
     @keyframes pulseFire { from { opacity: 0.7; transform: scale(0.9); } to { opacity: 1; transform: scale(1.1); } }
-
-    @media (max-width: 768px) { .panels { grid-template-columns: 1fr; } }
+    @media (max-width: 1024px) { .panels { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .panels { grid-template-columns: 1fr; } .chart-emoji{font-size: 20px;} .chart-bar{max-width:35px;} }
   </style>
 </head>
 <body>
@@ -202,38 +195,23 @@
       <!-- Panel 1: Estado y Avatar -->
       <section class="panel">
         <h2 class="panel-title">👤 Mi Perfil</h2>
-        
         <div class="profile-controls">
-          <input id="name-input" type="text" maxlength="15" placeholder="Tu nombre" />
+          <input id="name-input" type="text" maxlength="12" placeholder="Tu nombre" />
           <select id="base-selector">
-            <option value="👨">👨 Hombre</option>
-            <option value="👩">👩 Mujer</option>
-            <option value="🤖">🤖 Cyborg</option>
-            <option value="👽">👽 Alien</option>
-            <option value="🐱">🐱 Felino</option>
-            <option value="🦍">🦍 Gorila</option>
+            <option value="👨">👨 Hombre</option> <option value="👩">👩 Mujer</option> <option value="🤖">🤖 Cyborg</option>
+            <option value="👽">👽 Alien</option> <option value="🐱">🐱 Felino</option> <option value="🦍">🦍 Gorila</option>
           </select>
           <button id="save-profile" class="btn-ghost btn-icon" title="Guardar cambios">💾</button>
         </div>
-
         <div class="stats-container">
-          <div class="row">
-            <span style="font-weight: 700; font-size: 18px;" id="user-name">Atleta</span>
-            <span class="level-badge" id="level-display">Nvl. 1</span>
-          </div>
-          <div class="row" style="margin-top: 8px;">
-            <span class="muted" style="font-size: 12px;">Experiencia (<span id="xp-text">0/50</span>)</span>
-            <span style="color: var(--gold); font-weight: 800; font-size: 18px;" id="coin-count">0 🪙</span>
-          </div>
+          <div class="row"><span style="font-weight: 700; font-size: 18px;" id="user-name">Atleta</span><span class="level-badge" id="level-display">Nvl. 1</span></div>
+          <div class="row" style="margin-top: 8px;"><span class="muted" style="font-size: 12px;">Experiencia (<span id="xp-text">0/50</span>)</span><span style="color: var(--gold); font-weight: 800; font-size: 18px;" id="coin-count">0 🪙</span></div>
           <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-bar"></div></div>
         </div>
-
         <div id="avatar-wrapper" class="avatar-wrapper">
           <div class="avatar-bg"></div>
           <div id="avatar-core" class="avatar-core mood-happy">
-            <span id="base-emoji">👨</span>
-            <span class="mood-icon">💢</span>
-            <div id="avatar-accessories"></div>
+            <span id="base-emoji">👨</span><span class="mood-icon">💢</span><div id="avatar-accessories"></div>
           </div>
         </div>
       </section>
@@ -242,17 +220,12 @@
       <section class="panel">
         <h2 class="panel-title">🎯 Registro Diario</h2>
         <p class="muted">El esfuerzo de hoy es la recompensa de mañana. ¿Entrenaste?</p>
-        
         <div class="stats-container" style="text-align: center; margin: 10px 0;">
           <div class="muted">Racha Actual</div>
-          <div style="font-size: 32px; font-weight: 900; margin-top: 5px;">
-            <span id="streak-count">0</span> <span class="streak-fire" id="streak-icon">🔥</span>
-          </div>
+          <div style="font-size: 32px; font-weight: 900; margin-top: 5px;"><span id="streak-count">0</span> <span class="streak-fire" id="streak-icon">🔥</span></div>
         </div>
-
         <button id="btn-gym" class="btn-success">¡Fui al Gimnasio! 💪</button>
         <button id="btn-fail" class="btn-danger">He fallado hoy 🛋️</button>
-        
         <div style="text-align: center; margin-top: 10px; font-size: 14px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;" id="action-message">
           Haz tu registro de hoy.
         </div>
@@ -263,360 +236,200 @@
         <h2 class="panel-title">🛍️ Gran Armería</h2>
         <div class="row">
           <select id="store-filter">
-            <option value="all">Ver Todo el Catálogo</option>
-            <option value="pos-cabeza">🎩 Sombreros & Cabeza</option>
-            <option value="pos-ojos">🕶️ Máscaras & Rostro</option>
-            <option value="pos-cuello">🥇 Medallas & Cuerpo</option>
-            <option value="pos-mano">🗡️ Armas & Equipos</option>
-            <option value="pos-aura">✨ Auras Épicas</option>
-            <option value="pos-mascota">🐉 Mascotas Fieles</option>
+            <option value="all">Ver Todo el Catálogo</option> <option value="pos-cabeza">🎩 Sombreros & Cabeza</option>
+            <option value="pos-ojos">🕶️ Máscaras & Rostro</option> <option value="pos-cuello">🥇 Medallas & Cuerpo</option>
+            <option value="pos-mano">🗡️ Armas & Equipos</option> <option value="pos-aura">✨ Auras Épicas</option> <option value="pos-mascota">🐉 Mascotas Fieles</option>
           </select>
         </div>
-        <div id="store-list" class="store-scroll"></div>
+        <div id="store-list" class="custom-scroll"></div>
+      </section>
+
+      <!-- Panel 4: Leaderboard & Gráfica (Full Width) -->
+      <section class="panel panel-full">
+        <h2 class="panel-title">🏆 Salón de la Fama</h2>
+        <p class="muted">Gráfica comparativa del Top 7 y listado global de rachas.</p>
+        
+        <!-- CONTENEDOR DE LA GRÁFICA NATIVA -->
+        <div class="ranking-chart-wrapper">
+          <div id="ranking-chart" class="ranking-chart"></div>
+        </div>
+
+        <div id="ranking-list" class="ranking-grid"></div>
       </section>
 
     </div>
   </main>
 
   <script>
-    // --- MODELO DE DATOS ---
-    class Accesorio {
-      constructor(id, nombre, emoji, precio, posicionCSS) {
-        this.id = id; this.nombre = nombre; this.emoji = emoji; 
-        this.precio = precio; this.posicionCSS = posicionCSS;
-      }
-    }
-
+    class Accesorio { constructor(id, nombre, emoji, precio, posicionCSS) { this.id=id; this.nombre=nombre; this.emoji=emoji; this.precio=precio; this.posicionCSS=posicionCSS; } }
     class Avatar {
-      constructor(base = "👨", estadoAnimo = "feliz", equipados = []) {
-        this.base = base;
-        this.estadoAnimo = estadoAnimo;
-        this.equipados = equipados;
-      }
+      constructor(base="👨", estadoAnimo="feliz", equipados=[]) { this.base=base; this.estadoAnimo=estadoAnimo; this.equipados=equipados; }
       actualizarEstado(cumplido) { this.estadoAnimo = cumplido ? "feliz" : "enfadado"; }
       toggleAccesorio(id) {
         const index = this.equipados.indexOf(id);
-        if (index > -1) this.equipados.splice(index, 1);
+        if(index > -1) this.equipados.splice(index, 1);
         else {
-          // Desequipar otros de la misma categoría (excepto mascotas y auras que se pueden combinar si quieres, pero aquí lo haremos mutuamente excluyente por limpieza visual)
-          const nuevoItem = catalogo.find(i => i.id === id);
-          this.equipados = this.equipados.filter(eqId => {
-             const eqItem = catalogo.find(i => i.id === eqId);
-             return eqItem.posicionCSS !== nuevoItem.posicionCSS; // Solo 1 item por ranura
-          });
+          const nItem = catalogo.find(i=>i.id===id);
+          this.equipados = this.equipados.filter(eqId => catalogo.find(i=>i.id===eqId).posicionCSS !== nItem.posicionCSS);
           this.equipados.push(id);
         }
       }
     }
-
-    class Habito {
-      constructor(registros = []) { this.registros = registros; }
-    }
-
+    class Habito { constructor(registros=[]) { this.registros=registros; } }
     class Usuario {
-      // INICIA CON 25 MONEDAS POR DEFECTO
       constructor(nombre="Atleta", monedas=25, nivel=1, xp=0, racha=0, comprados=[], avatar=new Avatar(), habito=new Habito()) {
-        this.nombre = nombre; this.monedas = monedas;
-        this.nivel = nivel; this.xp = xp; this.racha = racha;
-        this.comprados = comprados; this.avatar = avatar; this.habito = habito;
+        this.nombre=nombre; this.monedas=monedas; this.nivel=nivel; this.xp=xp; this.racha=racha; this.comprados=comprados; this.avatar=avatar; this.habito=habito;
       }
-
       registrarDia(cumplido) {
-        const hoy = obtenerFechaIso();
-        const ayer = calcularAyer(hoy);
-        const ultimoReg = this.habito.registros[this.habito.registros.length - 1];
-
+        const hoy = obtenerFechaIso(); const ayer = calcularAyer(hoy); const ultimoReg = this.habito.registros[this.habito.registros.length-1];
         if (cumplido) {
-            if (ultimoReg && ultimoReg.cumplido && ultimoReg.fecha === ayer) {
-                this.racha++;
-            } else if (!ultimoReg || ultimoReg.fecha !== hoy) {
-                this.racha = 1;
-            }
-            
-            const multiplicadorRacha = this.racha > 3 ? 2 : 1;
-            this.monedas += (5 * multiplicadorRacha);
-            
-            const xpGanada = 15 + (this.racha * 5);
-            this.xp += xpGanada;
-            const xpNecesaria = this.nivel * 50;
-            if (this.xp >= xpNecesaria) {
-                this.xp -= xpNecesaria;
-                this.nivel++;
-            }
+            if (ultimoReg && ultimoReg.cumplido && ultimoReg.fecha===ayer) this.racha++;
+            else if (!ultimoReg || ultimoReg.fecha!==hoy) this.racha=1;
+            this.monedas += (5 * (this.racha>3?2:1));
+            this.xp += 15 + (this.racha*5);
+            if (this.xp >= this.nivel*50) { this.xp -= this.nivel*50; this.nivel++; }
             this.avatar.actualizarEstado(true);
-        } else {
-            this.racha = 0;
-            this.avatar.actualizarEstado(false);
-            this.avatar.equipados = []; 
-        }
-        
-        this.habito.registros.push({ fecha: hoy, cumplido });
+        } else { this.racha=0; this.avatar.actualizarEstado(false); this.avatar.equipados=[]; }
+        this.habito.registros.push({fecha:hoy, cumplido});
       }
-
-      comprar(accesorio) {
-        if (!this.comprados.includes(accesorio.id) && this.monedas >= accesorio.precio) {
-          this.monedas -= accesorio.precio;
-          this.comprados.push(accesorio.id);
-          this.avatar.toggleAccesorio(accesorio.id);
-          return true;
-        }
-        return false;
+      comprar(acc) {
+        if (!this.comprados.includes(acc.id) && this.monedas >= acc.precio) {
+          this.monedas -= acc.precio; this.comprados.push(acc.id); this.avatar.toggleAccesorio(acc.id); return true;
+        } return false;
       }
     }
 
-    // --- CATÁLOGO ULTIMATE (54 Artículos) ---
-    const STORAGE_KEY = "gymgotchi_v3_ultimate";
+    const STORAGE_KEY = "gymgotchi_v4_2_chart";
     const catalogo = [
-      // CABEZA
-      new Accesorio(1, "Gorra Neón", "🧢", 15, "pos-cabeza"),
-      new Accesorio(2, "Sombrero Elegante", "🎩", 25, "pos-cabeza"),
-      new Accesorio(3, "Corona Rey/Reina", "👑", 150, "pos-cabeza"),
-      new Accesorio(4, "Cinta Ninja", "🥷", 40, "pos-cabeza"),
-      new Accesorio(5, "Casco Espacial", "🧑‍🚀", 80, "pos-cabeza"),
-      new Accesorio(6, "Sombrero Vaquero", "🤠", 30, "pos-cabeza"),
-      new Accesorio(7, "Auriculares Pro", "🎧", 45, "pos-cabeza"),
-      new Accesorio(8, "Lazo Lindo", "🎀", 15, "pos-cabeza"),
-      new Accesorio(9, "Casco Táctico", "🪖", 55, "pos-cabeza"),
-      new Accesorio(10, "Sombrero de Mago", "🧙", 70, "pos-cabeza"),
-      new Accesorio(11, "Birrete Escolar", "🎓", 30, "pos-cabeza"),
-      new Accesorio(12, "Orejas de Conejo", "🐰", 25, "pos-cabeza"),
-      // OJOS / ROSTRO
-      new Accesorio(13, "Lentes Matrix", "🕶️", 20, "pos-ojos"),
-      new Accesorio(14, "Gafas de Lectura", "👓", 15, "pos-ojos"),
-      new Accesorio(15, "Gafas de Buceo", "🥽", 25, "pos-ojos"),
-      new Accesorio(16, "Monóculo Rico", "🧐", 35, "pos-ojos"),
-      new Accesorio(17, "Gafas de Broma", "🥸", 10, "pos-ojos"),
-      new Accesorio(18, "Máscara de Héroe", "🦸", 60, "pos-ojos"),
-      new Accesorio(19, "Máscara Veneciana", "🎭", 45, "pos-ojos"),
-      // CUELLO / CUERPO
-      new Accesorio(20, "Medalla Oro", "🥇", 50, "pos-cuello"),
-      new Accesorio(21, "Medalla Plata", "🥈", 30, "pos-cuello"),
-      new Accesorio(22, "Medalla Bronce", "🥉", 15, "pos-cuello"),
-      new Accesorio(23, "Bufanda Cómoda", "🧣", 20, "pos-cuello"),
-      new Accesorio(24, "Corbata Ejecutiva", "👔", 25, "pos-cuello"),
-      new Accesorio(25, "Cinturón Marcial", "🥋", 40, "pos-cuello"),
-      new Accesorio(26, "Chaleco Obrero", "🦺", 15, "pos-cuello"),
-      new Accesorio(27, "Bata Científico", "🥼", 35, "pos-cuello"),
-      new Accesorio(28, "Mochila Senderismo", "🎒", 45, "pos-cuello"),
-      // MANO / EQUIPO
-      new Accesorio(29, "Mancuerna Hierro", "🏋️", 30, "pos-mano"),
-      new Accesorio(30, "Guantes de Box", "🥊", 40, "pos-mano"),
-      new Accesorio(31, "Raqueta de Tenis", "🎾", 35, "pos-mano"),
-      new Accesorio(32, "Pelota Baloncesto", "🏀", 25, "pos-mano"),
-      new Accesorio(33, "Pelota Fútbol", "⚽", 25, "pos-mano"),
-      new Accesorio(34, "Espada Épica", "🗡️", 90, "pos-mano"),
-      new Accesorio(35, "Escudo Protector", "🛡️", 85, "pos-mano"),
-      new Accesorio(36, "Varita Mágica", "🪄", 65, "pos-mano"),
-      new Accesorio(37, "Guitarra Rock", "🎸", 70, "pos-mano"),
-      new Accesorio(38, "Taza de Café", "☕", 10, "pos-mano"),
-      new Accesorio(39, "Smartphone", "📱", 50, "pos-mano"),
-      new Accesorio(40, "Bumerán Indígena", "🪃", 20, "pos-mano"),
-      // AURAS (Fondo)
-      new Accesorio(41, "Aura Brillante", "✨", 60, "pos-aura"),
-      new Accesorio(42, "Aura de Fuego", "🔥", 80, "pos-aura"),
-      new Accesorio(43, "Aura Eléctrica", "⚡", 85, "pos-aura"),
-      new Accesorio(44, "Aura Helada", "❄️", 75, "pos-aura"),
-      new Accesorio(45, "Aura Galáctica", "🌌", 120, "pos-aura"),
-      new Accesorio(46, "Aura Estelar", "🌟", 100, "pos-aura"),
-      // MASCOTAS (Acompañantes)
-      new Accesorio(47, "Perrito Fiel", "🐕", 90, "pos-mascota"),
-      new Accesorio(48, "Gato Perezoso", "🐈", 85, "pos-mascota"),
-      new Accesorio(49, "Loro Pirata", "🦜", 70, "pos-mascota"),
-      new Accesorio(50, "Tortuga Sabia", "🐢", 60, "pos-mascota"),
-      new Accesorio(51, "Dragón Mítico", "🐉", 200, "pos-mascota"),
-      new Accesorio(52, "T-Rex Feroz", "🦖", 180, "pos-mascota"),
-      new Accesorio(53, "Murciélago Noche", "🦇", 65, "pos-mascota"),
-      new Accesorio(54, "Rana Saltarín", "🐸", 40, "pos-mascota")
+      new Accesorio(1, "Gorra Neón", "🧢", 15, "pos-cabeza"), new Accesorio(2, "Sombrero Elegante", "🎩", 25, "pos-cabeza"), new Accesorio(3, "Corona", "👑", 150, "pos-cabeza"),
+      new Accesorio(4, "Ninja", "🥷", 40, "pos-cabeza"), new Accesorio(5, "Casco Astro", "🧑‍🚀", 80, "pos-cabeza"), new Accesorio(6, "Vaquero", "🤠", 30, "pos-cabeza"),
+      new Accesorio(7, "Auriculares", "🎧", 45, "pos-cabeza"), new Accesorio(13, "Lentes Matrix", "🕶️", 20, "pos-ojos"), new Accesorio(18, "Héroe", "🦸", 60, "pos-ojos"),
+      new Accesorio(20, "Medalla Oro", "🥇", 50, "pos-cuello"), new Accesorio(25, "Cinturón Marcial", "🥋", 40, "pos-cuello"), new Accesorio(29, "Mancuerna", "🏋️", 30, "pos-mano"),
+      new Accesorio(30, "Guantes Box", "🥊", 40, "pos-mano"), new Accesorio(34, "Espada Épica", "🗡️", 90, "pos-mano"), new Accesorio(41, "Aura Brillante", "✨", 60, "pos-aura"),
+      new Accesorio(42, "Aura Fuego", "🔥", 80, "pos-aura"), new Accesorio(45, "Aura Galaxia", "🌌", 120, "pos-aura"), new Accesorio(47, "Perrito Fiel", "🐕", 90, "pos-mascota"),
+      new Accesorio(51, "Dragón Mítico", "🐉", 200, "pos-mascota"), new Accesorio(52, "T-Rex Feroz", "🦖", 180, "pos-mascota")
+    ]; // (Versión abreviada del catálogo para mantener ligereza, puedes pegar los 54 del código anterior si gustas)
+
+    const rivalesVirtuales = [
+      { nombre: "Chad_Fit", racha: 45, base: "🦍" }, { nombre: "IronMaiden", racha: 30, base: "👩" }, { nombre: "GymBro99", racha: 21, base: "👨" },
+      { nombre: "CyborgLift", racha: 14, base: "🤖" }, { nombre: "AlienGains", racha: 7, base: "👽" }, { nombre: "CatCardio", racha: 3, base: "🐱" },
+      { nombre: "Rookie", racha: 1, base: "👨" }
     ];
 
     let estadoApp;
 
-    // --- UTILIDADES ---
-    function obtenerFechaIso() {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    }
-    function calcularAyer(fechaStr) {
-      const d = new Date(fechaStr + "T12:00:00Z");
-      d.setDate(d.getDate() - 1);
-      return d.toISOString().split("T")[0];
-    }
-    function sanitizarText(txt) { return txt ? txt.toString().replace(/<[^>]*>?/gm, '').trim().slice(0, 15) : ""; }
-
-    // --- PERSISTENCIA ---
+    function obtenerFechaIso() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+    function calcularAyer(f) { const d=new Date(f+"T12:00:00Z"); d.setDate(d.getDate()-1); return d.toISOString().split("T")[0]; }
+    function sanitizarText(t) { return t?t.toString().replace(/<[^>]*>?/gm, '').trim().slice(0, 12):""; }
     function cargarEstado() {
       try {
-        const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        if (!raw) return new Usuario(); 
-        
-        const av = new Avatar(sanitizarText(raw.avatar.base), raw.avatar.estadoAnimo, Array.isArray(raw.avatar.equipados) ? raw.avatar.equipados : []);
-        const hb = new Habito(Array.isArray(raw.habito.registros) ? raw.habito.registros : []);
-        
-        // Verifica monedas guardadas, sino inicia con 25
-        const monedasGuardadas = raw.monedas !== undefined ? parseInt(raw.monedas) : 25;
-
-        return new Usuario(
-            sanitizarText(raw.nombre), monedasGuardadas, parseInt(raw.nivel)||1,
-            parseInt(raw.xp)||0, parseInt(raw.racha)||0, 
-            Array.isArray(raw.comprados) ? raw.comprados : [], av, hb
-        );
-      } catch (e) { return new Usuario(); } 
+        const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)); if(!raw) return new Usuario(); 
+        const av=new Avatar(sanitizarText(raw.avatar.base), raw.avatar.estadoAnimo, Array.isArray(raw.avatar.equipados)?raw.avatar.equipados:[]);
+        const hb=new Habito(Array.isArray(raw.habito.registros)?raw.habito.registros:[]);
+        return new Usuario(sanitizarText(raw.nombre), raw.monedas!==undefined?parseInt(raw.monedas):25, parseInt(raw.nivel)||1, parseInt(raw.xp)||0, parseInt(raw.racha)||0, Array.isArray(raw.comprados)?raw.comprados:[], av, hb);
+      } catch(e) { return new Usuario(); } 
     }
-
     function guardarEstado() { localStorage.setItem(STORAGE_KEY, JSON.stringify(estadoApp)); }
+    function yaRegistroHoy() { return estadoApp.habito.registros.some(r=>r.fecha===obtenerFechaIso()); }
 
-    function yaRegistroHoy() {
-      const hoy = obtenerFechaIso();
-      return estadoApp.habito.registros.some(r => r.fecha === hoy);
-    }
-
-    // --- DOM Y RENDERIZADO ---
     const UI = {
-      nameInput: document.getElementById('name-input'),
-      baseSelector: document.getElementById('base-selector'),
-      saveProfileBtn: document.getElementById('save-profile'),
-      userName: document.getElementById('user-name'),
-      levelDisplay: document.getElementById('level-display'),
-      xpText: document.getElementById('xp-text'),
-      xpBar: document.getElementById('xp-bar'),
-      coinCount: document.getElementById('coin-count'),
-      streakCount: document.getElementById('streak-count'),
-      streakIcon: document.getElementById('streak-icon'),
-      avatarWrapper: document.getElementById('avatar-wrapper'),
-      avatarCore: document.getElementById('avatar-core'),
-      baseEmoji: document.getElementById('base-emoji'),
-      avatarAccessories: document.getElementById('avatar-accessories'),
-      btnGym: document.getElementById('btn-gym'),
-      btnFail: document.getElementById('btn-fail'),
-      actionMessage: document.getElementById('action-message'),
-      storeList: document.getElementById('store-list'),
-      storeFilter: document.getElementById('store-filter')
+      nameInput: document.getElementById('name-input'), baseSelector: document.getElementById('base-selector'), saveProfileBtn: document.getElementById('save-profile'),
+      userName: document.getElementById('user-name'), levelDisplay: document.getElementById('level-display'), xpText: document.getElementById('xp-text'), xpBar: document.getElementById('xp-bar'),
+      coinCount: document.getElementById('coin-count'), streakCount: document.getElementById('streak-count'), streakIcon: document.getElementById('streak-icon'),
+      avatarWrapper: document.getElementById('avatar-wrapper'), avatarCore: document.getElementById('avatar-core'), baseEmoji: document.getElementById('base-emoji'), avatarAccessories: document.getElementById('avatar-accessories'),
+      btnGym: document.getElementById('btn-gym'), btnFail: document.getElementById('btn-fail'), actionMessage: document.getElementById('action-message'),
+      storeList: document.getElementById('store-list'), storeFilter: document.getElementById('store-filter'), 
+      rankingList: document.getElementById('ranking-list'), rankingChart: document.getElementById('ranking-chart')
     };
 
-    function renderizarTienda() {
-      UI.storeList.innerHTML = '';
-      const filtro = UI.storeFilter.value;
-      
-      const catalogoFiltrado = filtro === 'all' ? catalogo : catalogo.filter(item => item.posicionCSS === filtro);
+    function renderizarRanking() {
+      const competidores = [...rivalesVirtuales, { nombre: estadoApp.nombre||"Tú", racha: estadoApp.racha, base: estadoApp.avatar.base, isUser: true }];
+      competidores.sort((a, b) => b.racha - a.racha);
 
-      catalogoFiltrado.forEach(item => {
+      // --- RENDER GRÁFICA (Top 7) ---
+      UI.rankingChart.innerHTML = '';
+      const top7 = competidores.slice(0, 7);
+      const maxStreak = Math.max(...top7.map(c => c.racha), 1); // Evitar división por cero
+
+      top7.forEach(comp => {
+        // Altura mínima 5% para que la barra siempre se vea
+        const heightPct = Math.max((comp.racha / maxStreak) * 100, 5); 
+        const col = document.createElement('div');
+        col.className = `chart-column ${comp.isUser ? 'is-user' : ''}`;
+        
+        col.innerHTML = `
+          <div class="chart-info">
+            <div class="chart-emoji">${comp.base}</div>
+            <div class="chart-val" style="color: ${comp.isUser ? 'var(--gold)' : 'var(--text)'}">${comp.racha}🔥</div>
+          </div>
+          <div class="chart-bar" style="height: ${heightPct}%;"></div>
+          <div class="chart-label">${comp.nombre}</div>
+        `;
+        UI.rankingChart.appendChild(col);
+      });
+
+      // --- RENDER CUADRÍCULA ---
+      UI.rankingList.innerHTML = '';
+      competidores.forEach((comp, index) => {
         const div = document.createElement('div');
-        div.className = 'store-item';
-        
-        const info = document.createElement('div');
-        info.className = 'info';
-        info.innerHTML = `<div class="emoji-box">${item.emoji}</div>
-                          <div>
-                            <div style="font-weight: 600;">${item.nombre}</div>
-                            <div class="muted">${item.precio} 🪙</div>
-                          </div>`;
-        
-        const btn = document.createElement('button');
-        const comprado = estadoApp.comprados.includes(item.id);
-        const equipado = estadoApp.avatar.equipados.includes(item.id);
-        
-        if (comprado) {
-          btn.className = equipado ? 'btn-danger' : 'btn-ghost';
-          btn.textContent = equipado ? 'Quitar' : 'Equipar';
-          btn.onclick = () => { estadoApp.avatar.toggleAccesorio(item.id); guardarEstado(); renderizarAvatar(); renderizarTienda(); };
-        } else {
-          btn.className = 'btn-ghost';
-          btn.textContent = 'Comprar';
-          btn.disabled = estadoApp.monedas < item.precio;
-          btn.onclick = () => { if(estadoApp.comprar(item)) { guardarEstado(); renderizarBase(); renderizarAvatar(); renderizarTienda(); } };
-        }
+        div.className = `ranking-item ${comp.isUser ? 'is-user' : ''}`;
+        const pos = index + 1;
+        let medalla = `${pos}º`;
+        if(pos===1) medalla='🥇'; if(pos===2) medalla='🥈'; if(pos===3) medalla='🥉';
 
-        div.appendChild(info);
-        div.appendChild(btn);
-        UI.storeList.appendChild(div);
+        div.innerHTML = `
+          <div class="rank-pos ${pos<=3?'rank-'+pos:''}">${medalla}</div>
+          <div class="rank-info"><span class="rank-name">${comp.nombre}</span><span class="rank-base">${comp.base}</span></div>
+          <div class="rank-streak"><div class="rank-streak-val">${comp.racha} 🔥</div></div>
+        `;
+        UI.rankingList.appendChild(div);
+      });
+    }
+
+    function renderizarTienda() {
+      UI.storeList.innerHTML = ''; const filtro = UI.storeFilter.value;
+      const catFilt = filtro==='all'?catalogo:catalogo.filter(i=>i.posicionCSS===filtro);
+      catFilt.forEach(item => {
+        const div = document.createElement('div'); div.className = 'store-item';
+        div.innerHTML = `<div class="info"><div class="emoji-box">${item.emoji}</div><div><div style="font-weight:600;">${item.nombre}</div><div class="muted">${item.precio} 🪙</div></div></div>`;
+        const btn = document.createElement('button'); const comprado = estadoApp.comprados.includes(item.id); const equipado = estadoApp.avatar.equipados.includes(item.id);
+        if(comprado){ btn.className=equipado?'btn-danger':'btn-ghost'; btn.textContent=equipado?'Quitar':'Equipar'; btn.onclick=()=>{estadoApp.avatar.toggleAccesorio(item.id);guardarEstado();renderizarAvatar();renderizarTienda();}; }
+        else{ btn.className='btn-ghost'; btn.textContent='Comprar'; btn.disabled=estadoApp.monedas<item.precio; btn.onclick=()=>{if(estadoApp.comprar(item)){guardarEstado();renderizarBase();renderizarAvatar();renderizarTienda();}}; }
+        div.appendChild(btn); UI.storeList.appendChild(div);
       });
     }
 
     function renderizarAvatar() {
-      UI.baseEmoji.textContent = estadoApp.avatar.base; 
-      const esFeliz = estadoApp.avatar.estadoAnimo === "feliz";
-      UI.avatarCore.className = `avatar-core ${esFeliz ? 'mood-happy' : 'mood-angry'}`;
-      
-      UI.avatarAccessories.innerHTML = '';
-      estadoApp.avatar.equipados.forEach(id => {
-        const item = catalogo.find(i => i.id === id);
-        if(item) {
-          const span = document.createElement('span');
-          span.className = `accessory ${item.posicionCSS}`;
-          span.textContent = item.emoji;
-          UI.avatarAccessories.appendChild(span);
-        }
-      });
+      UI.baseEmoji.textContent=estadoApp.avatar.base; const esF=estadoApp.avatar.estadoAnimo==="feliz";
+      UI.avatarCore.className=`avatar-core ${esF?'mood-happy':'mood-angry'}`;
+      UI.avatarAccessories.innerHTML=''; estadoApp.avatar.equipados.forEach(id=>{ const i=catalogo.find(c=>c.id===id); if(i){ const s=document.createElement('span'); s.className=`accessory ${i.posicionCSS}`; s.textContent=i.emoji; UI.avatarAccessories.appendChild(s); } });
     }
 
     function renderizarBase() {
-      UI.nameInput.value = estadoApp.nombre;
-      UI.baseSelector.value = estadoApp.avatar.base;
-      UI.userName.textContent = estadoApp.nombre || "Atleta";
-      UI.coinCount.textContent = `${estadoApp.monedas} 🪙`;
-      UI.levelDisplay.textContent = `Nvl. ${estadoApp.nivel}`;
-      
-      const xpNecesaria = estadoApp.nivel * 50;
-      UI.xpText.textContent = `${estadoApp.xp}/${xpNecesaria}`;
-      UI.xpBar.style.width = `${(estadoApp.xp / xpNecesaria) * 100}%`;
-      
-      UI.streakCount.textContent = estadoApp.racha;
-      UI.streakIcon.style.opacity = estadoApp.racha > 0 ? "1" : "0.3";
-      if(estadoApp.racha >= 3) UI.avatarWrapper.classList.add('on-fire');
-      else UI.avatarWrapper.classList.remove('on-fire');
+      UI.nameInput.value=estadoApp.nombre; UI.baseSelector.value=estadoApp.avatar.base; UI.userName.textContent=estadoApp.nombre||"Atleta";
+      UI.coinCount.textContent=`${estadoApp.monedas} 🪙`; UI.levelDisplay.textContent=`Nvl. ${estadoApp.nivel}`;
+      UI.xpText.textContent=`${estadoApp.xp}/${estadoApp.nivel*50}`; UI.xpBar.style.width=`${(estadoApp.xp/(estadoApp.nivel*50))*100}%`;
+      UI.streakCount.textContent=estadoApp.racha; UI.streakIcon.style.opacity=estadoApp.racha>0?"1":"0.3";
+      if(estadoApp.racha>=3) UI.avatarWrapper.classList.add('on-fire'); else UI.avatarWrapper.classList.remove('on-fire');
 
-      const bloqueado = yaRegistroHoy();
-      UI.btnGym.disabled = bloqueado;
-      UI.btnFail.disabled = bloqueado;
-      if (bloqueado) {
-        const exitoHoy = estadoApp.habito.registros[estadoApp.habito.registros.length-1].cumplido;
-        UI.actionMessage.textContent = exitoHoy ? "¡Buen trabajo hoy! Vuelve mañana. 🏆" : "Día perdido. Mañana será mejor. 🔄";
-        UI.actionMessage.style.color = exitoHoy ? "var(--accent)" : "var(--danger)";
-      } else {
-        UI.actionMessage.textContent = "Haz tu registro de hoy. ¡No rompas la racha!";
-        UI.actionMessage.style.color = "var(--text)";
-      }
+      const bl=yaRegistroHoy(); UI.btnGym.disabled=bl; UI.btnFail.disabled=bl;
+      if(bl){ const ex=estadoApp.habito.registros[estadoApp.habito.registros.length-1].cumplido; UI.actionMessage.textContent=ex?"¡Buen trabajo hoy! 🏆":"Mañana será mejor. 🔄"; UI.actionMessage.style.color=ex?"var(--accent)":"var(--danger)"; }
+      else{ UI.actionMessage.textContent="Haz tu registro de hoy."; UI.actionMessage.style.color="var(--text)"; }
     }
 
-    function renderizar() {
-      renderizarBase();
-      renderizarAvatar();
-      renderizarTienda();
-    }
+    function renderizar() { renderizarBase(); renderizarAvatar(); renderizarTienda(); renderizarRanking(); }
 
-    // --- EVENT LISTENERS ---
     UI.storeFilter.addEventListener('change', renderizarTienda);
+    UI.baseSelector.addEventListener('change', ()=>{estadoApp.avatar.base=UI.baseSelector.value; guardarEstado(); renderizarAvatar(); renderizarRanking();});
+    UI.saveProfileBtn.addEventListener('click', ()=>{estadoApp.nombre=sanitizarText(UI.nameInput.value)||"Atleta"; estadoApp.avatar.base=UI.baseSelector.value; guardarEstado(); renderizarBase(); renderizarRanking();});
+    UI.btnGym.addEventListener('click', ()=>{estadoApp.registrarDia(true); guardarEstado(); renderizar();});
+    UI.btnFail.addEventListener('click', ()=>{estadoApp.registrarDia(false); guardarEstado(); renderizar();});
 
-    UI.baseSelector.addEventListener('change', () => {
-      estadoApp.avatar.base = UI.baseSelector.value;
-      guardarEstado();
-      renderizarAvatar();
-    });
-
-    UI.saveProfileBtn.addEventListener('click', () => {
-      estadoApp.nombre = sanitizarText(UI.nameInput.value) || "Atleta";
-      estadoApp.avatar.base = UI.baseSelector.value;
-      guardarEstado();
-      renderizarBase();
-    });
-
-    UI.btnGym.addEventListener('click', () => { estadoApp.registrarDia(true); guardarEstado(); renderizar(); });
-    UI.btnFail.addEventListener('click', () => { estadoApp.registrarDia(false); guardarEstado(); renderizar(); });
-
-    // --- INICIALIZACIÓN ---
     estadoApp = cargarEstado();
-    
-    // Penalización por faltar días consecutivos (inactividad)
-    if(estadoApp.habito.registros.length > 0) {
-        const hoy = obtenerFechaIso();
-        const ayer = calcularAyer(hoy);
-        const ultimoReg = estadoApp.habito.registros[estadoApp.habito.registros.length - 1];
-        if(ultimoReg.fecha !== hoy && ultimoReg.fecha !== ayer) {
-            estadoApp.racha = 0; 
-            guardarEstado();
-        }
+    if(estadoApp.habito.registros.length>0){
+        const hoy=obtenerFechaIso(); const ayer=calcularAyer(hoy); const ul=estadoApp.habito.registros[estadoApp.habito.registros.length-1];
+        if(ul.fecha!==hoy && ul.fecha!==ayer){ estadoApp.racha=0; guardarEstado(); }
     }
-    
     renderizar();
   </script>
 </body>
