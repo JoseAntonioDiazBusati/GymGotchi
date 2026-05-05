@@ -26,9 +26,9 @@ Tu compañero virtual está siempre contigo. Cuando haces tu entrenamiento, se v
 
 ### 3. *La Tienda de Accesorios*
 Puedes comprar decoraciones para tu avatar con tus monedas:
-- 🧢 Gorra Neon (4 monedas)
-- 🕶️ Lentes Pro (6 monedas)
-- 🥇 Medalla de Oro (8 monedas)
+- 🧢 Gorra Neon (15 monedas)
+- 🕶️ Lentes Matrix (20 monedas)
+- 🥇 Medalla de Oro (50 monedas)
 
 ### 4. *Bloqueo Diario*
 Solo puedes registrar tu asistencia o falta *una vez al día*. Después de registrar, deberás esperar hasta mañana para volver a registrar.
