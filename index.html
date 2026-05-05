@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GymGotchi V2.1 - Forja tu Leyenda</title>
+  <title>GymGotchi V3.0 - Ultimate Armory</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -74,11 +74,6 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .panel:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-    }
-
     .panel-title {
       font-size: 20px;
       font-weight: 700;
@@ -90,18 +85,8 @@
 
     .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     
-    /* Solución de desbordamiento en controles de perfil */
-    .profile-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    
-    .profile-controls > * {
-      min-width: 0; /* Previene el desbordamiento en flexbox */
-    }
-
+    .profile-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .profile-controls > * { min-width: 0; }
     .muted { color: var(--muted); font-size: 14px; }
 
     input, select {
@@ -134,11 +119,7 @@
       gap: 8px;
     }
 
-    button.btn-icon {
-      flex: 0 0 auto;
-      padding: 12px 16px;
-    }
-
+    button.btn-icon { flex: 0 0 auto; padding: 12px 16px; }
     button:disabled { cursor: not-allowed; opacity: 0.5; filter: grayscale(1); }
     
     .btn-success { background: var(--accent); color: #022c22; box-shadow: 0 0 15px var(--accent-glow); }
@@ -150,7 +131,6 @@
     .btn-ghost { background: rgba(255, 255, 255, 0.05); color: var(--text); border: 1px solid var(--glass-border); }
     .btn-ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); }
 
-    /* Stats: XP & Niveles */
     .stats-container { background: rgba(0,0,0,0.4); padding: 16px; border-radius: 16px; border: 1px solid var(--glass-border); }
     .level-badge { background: var(--gold); color: #000; padding: 4px 10px; border-radius: 8px; font-weight: 900; font-size: 14px; }
     .xp-bar-bg { width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 8px; overflow: hidden; position: relative;}
@@ -165,20 +145,39 @@
     
     .avatar-core { font-size: 70px; z-index: 1; transition: transform 0.3s; position: relative; }
     .avatar-core.mood-happy { animation: float 3s ease-in-out infinite; }
-    /* Estado enfadado: pierde color y tiembla, pero mantiene la base */
     .avatar-core.mood-angry { animation: shake 0.5s infinite; filter: grayscale(0.9) brightness(0.7); }
     
     .mood-icon { position: absolute; top: -10px; right: -20px; font-size: 24px; opacity: 0; transition: opacity 0.3s; }
     .avatar-core.mood-angry .mood-icon { opacity: 1; }
 
-    .accessory { position: absolute; font-size: 40px; z-index: 2; pointer-events: none; filter: none; }
-    /* Posiciones relativas al avatar core */
-    .pos-cabeza { top: -20px; left: 50%; transform: translateX(-50%); }
-    .pos-ojos { top: 15px; left: 50%; transform: translateX(-50%); font-size: 45px; }
-    .pos-cuello { bottom: -10px; left: 50%; transform: translateX(-50%); font-size: 50px; }
-    .pos-mano { top: 20px; right: -40px; font-size: 35px; }
+    .accessory { position: absolute; font-size: 40px; z-index: 2; pointer-events: none; }
+    
+    /* Posiciones del equipamiento */
+    .pos-cabeza { top: -30px; left: 50%; transform: translateX(-50%); z-index: 3;}
+    .pos-ojos { top: 15px; left: 50%; transform: translateX(-50%); font-size: 45px; z-index: 3;}
+    .pos-cuello { bottom: -15px; left: 50%; transform: translateX(-50%); font-size: 50px; z-index: 3;}
+    .pos-mano { top: 10px; left: -50px; font-size: 35px; z-index: 3;} /* Mano izquierda */
+    
+    /* Nuevas Categorías Premium */
+    .pos-aura { 
+      top: 50%; left: 50%; transform: translate(-50%, -50%) scale(2.8); 
+      z-index: -1; opacity: 0.7; filter: drop-shadow(0 0 15px rgba(255,255,255,0.5));
+    }
+    .pos-mascota { 
+      bottom: -15px; right: -60px; font-size: 45px; z-index: 3;
+      animation: float 4s ease-in-out infinite reverse;
+    }
 
-    /* Tienda / Inventario */
+    /* Tienda y Scrollbar */
+    .store-scroll {
+      display: flex; flex-direction: column; gap: 10px; margin-top: 5px;
+      max-height: 380px; overflow-y: auto; padding-right: 8px;
+    }
+    .store-scroll::-webkit-scrollbar { width: 8px; }
+    .store-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+    .store-scroll::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 10px; }
+    .store-scroll::-webkit-scrollbar-thumb:hover { background: var(--text); }
+
     .store-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid transparent; transition: border-color 0.2s; }
     .store-item:hover { border-color: var(--muted); }
     .store-item .info { display: flex; align-items: center; gap: 12px; }
@@ -194,7 +193,7 @@
 <body>
   <header>
     <h1>GYMGOTCHI</h1>
-    <p class="muted">Forja tu disciplina, evoluciona tu avatar.</p>
+    <p class="muted">Forja tu disciplina, colecciona tu legado.</p>
   </header>
 
   <main class="app">
@@ -212,7 +211,7 @@
             <option value="🤖">🤖 Cyborg</option>
             <option value="👽">👽 Alien</option>
             <option value="🐱">🐱 Felino</option>
-            <option value="🦖">🦖 T-Rex</option>
+            <option value="🦍">🦍 Gorila</option>
           </select>
           <button id="save-profile" class="btn-ghost btn-icon" title="Guardar cambios">💾</button>
         </div>
@@ -259,18 +258,28 @@
         </div>
       </section>
 
-      <!-- Panel 3: Tienda / Inventario -->
+      <!-- Panel 3: Armería Ultimate -->
       <section class="panel">
-        <h2 class="panel-title">🛍️ Armería</h2>
-        <p class="muted">Usa monedas para comprar o equipa lo que ya tienes.</p>
-        <div id="store-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;"></div>
+        <h2 class="panel-title">🛍️ Gran Armería</h2>
+        <div class="row">
+          <select id="store-filter">
+            <option value="all">Ver Todo el Catálogo</option>
+            <option value="pos-cabeza">🎩 Sombreros & Cabeza</option>
+            <option value="pos-ojos">🕶️ Máscaras & Rostro</option>
+            <option value="pos-cuello">🥇 Medallas & Cuerpo</option>
+            <option value="pos-mano">🗡️ Armas & Equipos</option>
+            <option value="pos-aura">✨ Auras Épicas</option>
+            <option value="pos-mascota">🐉 Mascotas Fieles</option>
+          </select>
+        </div>
+        <div id="store-list" class="store-scroll"></div>
       </section>
 
     </div>
   </main>
 
   <script>
-    // --- MODELO DE DATOS MEJORADO ---
+    // --- MODELO DE DATOS ---
     class Accesorio {
       constructor(id, nombre, emoji, precio, posicionCSS) {
         this.id = id; this.nombre = nombre; this.emoji = emoji; 
@@ -288,7 +297,15 @@
       toggleAccesorio(id) {
         const index = this.equipados.indexOf(id);
         if (index > -1) this.equipados.splice(index, 1);
-        else this.equipados.push(id);
+        else {
+          // Desequipar otros de la misma categoría (excepto mascotas y auras que se pueden combinar si quieres, pero aquí lo haremos mutuamente excluyente por limpieza visual)
+          const nuevoItem = catalogo.find(i => i.id === id);
+          this.equipados = this.equipados.filter(eqId => {
+             const eqItem = catalogo.find(i => i.id === eqId);
+             return eqItem.posicionCSS !== nuevoItem.posicionCSS; // Solo 1 item por ranura
+          });
+          this.equipados.push(id);
+        }
       }
     }
 
@@ -297,8 +314,8 @@
     }
 
     class Usuario {
-      // Por defecto ahora inicia con 10 monedas
-      constructor(nombre="Atleta", monedas=10, nivel=1, xp=0, racha=0, comprados=[], avatar=new Avatar(), habito=new Habito()) {
+      // INICIA CON 25 MONEDAS POR DEFECTO
+      constructor(nombre="Atleta", monedas=25, nivel=1, xp=0, racha=0, comprados=[], avatar=new Avatar(), habito=new Habito()) {
         this.nombre = nombre; this.monedas = monedas;
         this.nivel = nivel; this.xp = xp; this.racha = racha;
         this.comprados = comprados; this.avatar = avatar; this.habito = habito;
@@ -347,13 +364,69 @@
       }
     }
 
-    // --- BASE DE DATOS LOCAL Y CATÁLOGO ---
-    const STORAGE_KEY = "gymgotchi_v2_1_pro";
+    // --- CATÁLOGO ULTIMATE (54 Artículos) ---
+    const STORAGE_KEY = "gymgotchi_v3_ultimate";
     const catalogo = [
+      // CABEZA
       new Accesorio(1, "Gorra Neón", "🧢", 15, "pos-cabeza"),
-      new Accesorio(2, "Lentes Matrix", "🕶️", 25, "pos-ojos"),
-      new Accesorio(3, "Medalla Oro", "🥇", 50, "pos-cuello"),
-      new Accesorio(4, "Mancuerna", "🏋️", 35, "pos-mano")
+      new Accesorio(2, "Sombrero Elegante", "🎩", 25, "pos-cabeza"),
+      new Accesorio(3, "Corona Rey/Reina", "👑", 150, "pos-cabeza"),
+      new Accesorio(4, "Cinta Ninja", "🥷", 40, "pos-cabeza"),
+      new Accesorio(5, "Casco Espacial", "🧑‍🚀", 80, "pos-cabeza"),
+      new Accesorio(6, "Sombrero Vaquero", "🤠", 30, "pos-cabeza"),
+      new Accesorio(7, "Auriculares Pro", "🎧", 45, "pos-cabeza"),
+      new Accesorio(8, "Lazo Lindo", "🎀", 15, "pos-cabeza"),
+      new Accesorio(9, "Casco Táctico", "🪖", 55, "pos-cabeza"),
+      new Accesorio(10, "Sombrero de Mago", "🧙", 70, "pos-cabeza"),
+      new Accesorio(11, "Birrete Escolar", "🎓", 30, "pos-cabeza"),
+      new Accesorio(12, "Orejas de Conejo", "🐰", 25, "pos-cabeza"),
+      // OJOS / ROSTRO
+      new Accesorio(13, "Lentes Matrix", "🕶️", 20, "pos-ojos"),
+      new Accesorio(14, "Gafas de Lectura", "👓", 15, "pos-ojos"),
+      new Accesorio(15, "Gafas de Buceo", "🥽", 25, "pos-ojos"),
+      new Accesorio(16, "Monóculo Rico", "🧐", 35, "pos-ojos"),
+      new Accesorio(17, "Gafas de Broma", "🥸", 10, "pos-ojos"),
+      new Accesorio(18, "Máscara de Héroe", "🦸", 60, "pos-ojos"),
+      new Accesorio(19, "Máscara Veneciana", "🎭", 45, "pos-ojos"),
+      // CUELLO / CUERPO
+      new Accesorio(20, "Medalla Oro", "🥇", 50, "pos-cuello"),
+      new Accesorio(21, "Medalla Plata", "🥈", 30, "pos-cuello"),
+      new Accesorio(22, "Medalla Bronce", "🥉", 15, "pos-cuello"),
+      new Accesorio(23, "Bufanda Cómoda", "🧣", 20, "pos-cuello"),
+      new Accesorio(24, "Corbata Ejecutiva", "👔", 25, "pos-cuello"),
+      new Accesorio(25, "Cinturón Marcial", "🥋", 40, "pos-cuello"),
+      new Accesorio(26, "Chaleco Obrero", "🦺", 15, "pos-cuello"),
+      new Accesorio(27, "Bata Científico", "🥼", 35, "pos-cuello"),
+      new Accesorio(28, "Mochila Senderismo", "🎒", 45, "pos-cuello"),
+      // MANO / EQUIPO
+      new Accesorio(29, "Mancuerna Hierro", "🏋️", 30, "pos-mano"),
+      new Accesorio(30, "Guantes de Box", "🥊", 40, "pos-mano"),
+      new Accesorio(31, "Raqueta de Tenis", "🎾", 35, "pos-mano"),
+      new Accesorio(32, "Pelota Baloncesto", "🏀", 25, "pos-mano"),
+      new Accesorio(33, "Pelota Fútbol", "⚽", 25, "pos-mano"),
+      new Accesorio(34, "Espada Épica", "🗡️", 90, "pos-mano"),
+      new Accesorio(35, "Escudo Protector", "🛡️", 85, "pos-mano"),
+      new Accesorio(36, "Varita Mágica", "🪄", 65, "pos-mano"),
+      new Accesorio(37, "Guitarra Rock", "🎸", 70, "pos-mano"),
+      new Accesorio(38, "Taza de Café", "☕", 10, "pos-mano"),
+      new Accesorio(39, "Smartphone", "📱", 50, "pos-mano"),
+      new Accesorio(40, "Bumerán Indígena", "🪃", 20, "pos-mano"),
+      // AURAS (Fondo)
+      new Accesorio(41, "Aura Brillante", "✨", 60, "pos-aura"),
+      new Accesorio(42, "Aura de Fuego", "🔥", 80, "pos-aura"),
+      new Accesorio(43, "Aura Eléctrica", "⚡", 85, "pos-aura"),
+      new Accesorio(44, "Aura Helada", "❄️", 75, "pos-aura"),
+      new Accesorio(45, "Aura Galáctica", "🌌", 120, "pos-aura"),
+      new Accesorio(46, "Aura Estelar", "🌟", 100, "pos-aura"),
+      // MASCOTAS (Acompañantes)
+      new Accesorio(47, "Perrito Fiel", "🐕", 90, "pos-mascota"),
+      new Accesorio(48, "Gato Perezoso", "🐈", 85, "pos-mascota"),
+      new Accesorio(49, "Loro Pirata", "🦜", 70, "pos-mascota"),
+      new Accesorio(50, "Tortuga Sabia", "🐢", 60, "pos-mascota"),
+      new Accesorio(51, "Dragón Mítico", "🐉", 200, "pos-mascota"),
+      new Accesorio(52, "T-Rex Feroz", "🦖", 180, "pos-mascota"),
+      new Accesorio(53, "Murciélago Noche", "🦇", 65, "pos-mascota"),
+      new Accesorio(54, "Rana Saltarín", "🐸", 40, "pos-mascota")
     ];
 
     let estadoApp;
@@ -370,7 +443,7 @@
     }
     function sanitizarText(txt) { return txt ? txt.toString().replace(/<[^>]*>?/gm, '').trim().slice(0, 15) : ""; }
 
-    // --- PERSISTENCIA Y SEGURIDAD ---
+    // --- PERSISTENCIA ---
     function cargarEstado() {
       try {
         const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -379,15 +452,15 @@
         const av = new Avatar(sanitizarText(raw.avatar.base), raw.avatar.estadoAnimo, Array.isArray(raw.avatar.equipados) ? raw.avatar.equipados : []);
         const hb = new Habito(Array.isArray(raw.habito.registros) ? raw.habito.registros : []);
         
-        // Si tiene monedas guardadas las usamos, si no se asume 10
-        const monedasGuardadas = raw.monedas !== undefined ? parseInt(raw.monedas) : 10;
+        // Verifica monedas guardadas, sino inicia con 25
+        const monedasGuardadas = raw.monedas !== undefined ? parseInt(raw.monedas) : 25;
 
         return new Usuario(
             sanitizarText(raw.nombre), monedasGuardadas, parseInt(raw.nivel)||1,
             parseInt(raw.xp)||0, parseInt(raw.racha)||0, 
             Array.isArray(raw.comprados) ? raw.comprados : [], av, hb
         );
-      } catch (e) { return new Usuario(); } // Por defecto el nuevo usuario tiene 10 monedas
+      } catch (e) { return new Usuario(); } 
     }
 
     function guardarEstado() { localStorage.setItem(STORAGE_KEY, JSON.stringify(estadoApp)); }
@@ -397,7 +470,7 @@
       return estadoApp.habito.registros.some(r => r.fecha === hoy);
     }
 
-    // --- CONTROLADORES DEL DOM ---
+    // --- DOM Y RENDERIZADO ---
     const UI = {
       nameInput: document.getElementById('name-input'),
       baseSelector: document.getElementById('base-selector'),
@@ -416,44 +489,17 @@
       btnGym: document.getElementById('btn-gym'),
       btnFail: document.getElementById('btn-fail'),
       actionMessage: document.getElementById('action-message'),
-      storeList: document.getElementById('store-list')
+      storeList: document.getElementById('store-list'),
+      storeFilter: document.getElementById('store-filter')
     };
 
-    function renderizar() {
-      UI.nameInput.value = estadoApp.nombre;
-      UI.baseSelector.value = estadoApp.avatar.base;
-      UI.userName.textContent = estadoApp.nombre || "Atleta";
-      UI.coinCount.textContent = `${estadoApp.monedas} 🪙`;
-      UI.levelDisplay.textContent = `Nvl. ${estadoApp.nivel}`;
-      
-      const xpNecesaria = estadoApp.nivel * 50;
-      UI.xpText.textContent = `${estadoApp.xp}/${xpNecesaria}`;
-      UI.xpBar.style.width = `${(estadoApp.xp / xpNecesaria) * 100}%`;
-      
-      UI.streakCount.textContent = estadoApp.racha;
-      UI.streakIcon.style.opacity = estadoApp.racha > 0 ? "1" : "0.3";
-      if(estadoApp.racha >= 3) UI.avatarWrapper.classList.add('on-fire');
-      else UI.avatarWrapper.classList.remove('on-fire');
-
-      // --- RENDER DEL AVATAR CORREGIDO ---
-      UI.baseEmoji.textContent = estadoApp.avatar.base; // Siempre muestra la base seleccionada
-      const esFeliz = estadoApp.avatar.estadoAnimo === "feliz";
-      // El CSS se encarga de ponerlo gris y temblar si falla, manteniendo la figura base
-      UI.avatarCore.className = `avatar-core ${esFeliz ? 'mood-happy' : 'mood-angry'}`;
-      
-      UI.avatarAccessories.innerHTML = '';
-      estadoApp.avatar.equipados.forEach(id => {
-        const item = catalogo.find(i => i.id === id);
-        if(item) {
-          const span = document.createElement('span');
-          span.className = `accessory ${item.posicionCSS}`;
-          span.textContent = item.emoji;
-          UI.avatarAccessories.appendChild(span);
-        }
-      });
-
+    function renderizarTienda() {
       UI.storeList.innerHTML = '';
-      catalogo.forEach(item => {
+      const filtro = UI.storeFilter.value;
+      
+      const catalogoFiltrado = filtro === 'all' ? catalogo : catalogo.filter(item => item.posicionCSS === filtro);
+
+      catalogoFiltrado.forEach(item => {
         const div = document.createElement('div');
         div.className = 'store-item';
         
@@ -472,18 +518,52 @@
         if (comprado) {
           btn.className = equipado ? 'btn-danger' : 'btn-ghost';
           btn.textContent = equipado ? 'Quitar' : 'Equipar';
-          btn.onclick = () => { estadoApp.avatar.toggleAccesorio(item.id); guardarEstado(); renderizar(); };
+          btn.onclick = () => { estadoApp.avatar.toggleAccesorio(item.id); guardarEstado(); renderizarAvatar(); renderizarTienda(); };
         } else {
           btn.className = 'btn-ghost';
           btn.textContent = 'Comprar';
           btn.disabled = estadoApp.monedas < item.precio;
-          btn.onclick = () => { if(estadoApp.comprar(item)) { guardarEstado(); renderizar(); } };
+          btn.onclick = () => { if(estadoApp.comprar(item)) { guardarEstado(); renderizarBase(); renderizarAvatar(); renderizarTienda(); } };
         }
 
         div.appendChild(info);
         div.appendChild(btn);
         UI.storeList.appendChild(div);
       });
+    }
+
+    function renderizarAvatar() {
+      UI.baseEmoji.textContent = estadoApp.avatar.base; 
+      const esFeliz = estadoApp.avatar.estadoAnimo === "feliz";
+      UI.avatarCore.className = `avatar-core ${esFeliz ? 'mood-happy' : 'mood-angry'}`;
+      
+      UI.avatarAccessories.innerHTML = '';
+      estadoApp.avatar.equipados.forEach(id => {
+        const item = catalogo.find(i => i.id === id);
+        if(item) {
+          const span = document.createElement('span');
+          span.className = `accessory ${item.posicionCSS}`;
+          span.textContent = item.emoji;
+          UI.avatarAccessories.appendChild(span);
+        }
+      });
+    }
+
+    function renderizarBase() {
+      UI.nameInput.value = estadoApp.nombre;
+      UI.baseSelector.value = estadoApp.avatar.base;
+      UI.userName.textContent = estadoApp.nombre || "Atleta";
+      UI.coinCount.textContent = `${estadoApp.monedas} 🪙`;
+      UI.levelDisplay.textContent = `Nvl. ${estadoApp.nivel}`;
+      
+      const xpNecesaria = estadoApp.nivel * 50;
+      UI.xpText.textContent = `${estadoApp.xp}/${xpNecesaria}`;
+      UI.xpBar.style.width = `${(estadoApp.xp / xpNecesaria) * 100}%`;
+      
+      UI.streakCount.textContent = estadoApp.racha;
+      UI.streakIcon.style.opacity = estadoApp.racha > 0 ? "1" : "0.3";
+      if(estadoApp.racha >= 3) UI.avatarWrapper.classList.add('on-fire');
+      else UI.avatarWrapper.classList.remove('on-fire');
 
       const bloqueado = yaRegistroHoy();
       UI.btnGym.disabled = bloqueado;
@@ -498,29 +578,35 @@
       }
     }
 
-    // --- EVENT LISTENERS MEJORADOS ---
-    
-    // Actualización dinámica al cambiar el select sin necesidad de presionar Guardar
+    function renderizar() {
+      renderizarBase();
+      renderizarAvatar();
+      renderizarTienda();
+    }
+
+    // --- EVENT LISTENERS ---
+    UI.storeFilter.addEventListener('change', renderizarTienda);
+
     UI.baseSelector.addEventListener('change', () => {
       estadoApp.avatar.base = UI.baseSelector.value;
       guardarEstado();
-      renderizar();
+      renderizarAvatar();
     });
 
-    // Guardado manual del nombre
     UI.saveProfileBtn.addEventListener('click', () => {
       estadoApp.nombre = sanitizarText(UI.nameInput.value) || "Atleta";
       estadoApp.avatar.base = UI.baseSelector.value;
       guardarEstado();
-      renderizar();
+      renderizarBase();
     });
 
     UI.btnGym.addEventListener('click', () => { estadoApp.registrarDia(true); guardarEstado(); renderizar(); });
     UI.btnFail.addEventListener('click', () => { estadoApp.registrarDia(false); guardarEstado(); renderizar(); });
 
-    // Inicialización
+    // --- INICIALIZACIÓN ---
     estadoApp = cargarEstado();
     
+    // Penalización por faltar días consecutivos (inactividad)
     if(estadoApp.habito.registros.length > 0) {
         const hoy = obtenerFechaIso();
         const ayer = calcularAyer(hoy);
